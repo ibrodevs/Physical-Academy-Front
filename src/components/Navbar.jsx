@@ -61,11 +61,11 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
   const splitText = (text) => {
     const words = text.split(' ');
     if (words.length <= 1) return [text, ''];
-    
+
     const mid = Math.ceil(words.length / 2);
     const firstLine = words.slice(0, mid).join(' ');
     const secondLine = words.slice(mid).join(' ');
-    
+
     return [firstLine, secondLine];
   };
 
@@ -74,7 +74,7 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
     academy: {
       title: t('nav.academy', 'Академия'),
       submenu: [
-        { 
+        {
           title: t('nav.about_academyy', 'Об академии'),
           hasNested: true,
           nestedItems: [
@@ -85,7 +85,7 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
             { title: t('nav.kgafkis_in_numbers', 'КГАФКиС в цифрах'), link: '/academy/numbers' },
           ]
         },
-        { 
+        {
           title: t('nav.leadership', 'Руководство'),
           hasNested: true,
           nestedItems: [
@@ -102,7 +102,7 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
         }
       ]
     },
-    
+
     education: {
       title: t('nav.education', 'Образование'),
       submenu: [
@@ -110,23 +110,23 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
           title: t('nav.faculties', 'Факультеты'),
           hasNested: true,
           nestedItems: [
-            { 
+            {
               title: t('nav.pedagogical_national_sports', 'Педагогический и национальные виды спорта'),
               link: '/education/faculties/pedagogical'
             },
-            { 
+            {
               title: t('nav.coaching_faculty', 'Тренерский факультет'),
               link: '/education/faculties/coaching'
             },
-            { 
+            {
               title: t('nav.military_training_physical_culture', 'Военная подготовка и физическая культура'),
               link: '/education/faculties/military-training'
             },
-            { 
+            {
               title: t('nav.correspondence_advanced_training', 'Заочное обучение и повышение квалификации'),
               link: '/education/faculties/correspondence'
             },
-            { 
+            {
               title: t('nav.general_faculty_departments', 'Общефакультетские кафедры'),
               link: '/education/departments'
             }
@@ -134,7 +134,7 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
         },
         { title: t('nav.master_program', 'Магистратура'), link: '/education/faculties/master' },
         { title: t('nav.doctorate', 'Докторантура'), link: '/education/faculties/doctorate' },
-        { 
+        {
           title: t('nav.college', 'Колледж'),
           hasNested: true,
           nestedItems: [
@@ -166,7 +166,7 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
     admissions: {
       title: t('nav.admissions', 'Поступление'),
       submenu: [
-        { 
+        {
           title: t('nav.bachelor', 'Бакалавриат'),
           hasNested: true,
           nestedItems: [
@@ -177,7 +177,7 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
             { title: t('nav.contacts', 'Контакты'), link: '/admissions/bachelor/contacts' },
           ]
         },
-        { 
+        {
           title: t('nav.master_phd', 'Магистратура'),
           hasNested: true,
           nestedItems: [
@@ -191,7 +191,7 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
             { title: t('nav.general_info', 'Общая информация'), link: '/admissions/doctorate/info' },
           ]
         },
-        { 
+        {
           title: t('nav.college', 'Колледж'),
           hasNested: true,
           nestedItems: [
@@ -230,9 +230,10 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
     contacts: {
       title: t('nav.contacts', 'Контакты'),
       submenu: [
-        { title: t('nav.address_map', 'Адрес и карта'), link: '/contacts/address' },
-        { title: t('nav.phones_email', 'Телефоны и email'), link: '/contacts/contact-info' },
-        { title: t('nav.social_networks', 'Социальные сети'), link: '/contacts/social' },
+        // { title: t('nav.address_map', 'Адрес и карта'), link: '/contacts/address' },
+        // { title: t('nav.phones_email', 'Телефоны и email'), link: '/contacts/contact-info' },
+        // { title: t('nav.social_networks', 'Социальные сети'), link: '/contacts/social' },
+        { title: t('nav.contacts', 'Контакты'), link: '/contacts' },
       ]
     }
   };
@@ -263,11 +264,11 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
                 <h2 className="ml-3 text-xl font-bold text-blue-800 group-hover:text-teal-600 transition-colors duration-300 hidden sm:block">
                   {t('nav.kgafkis', 'КГАФКиС')}
                 </h2>
-                
+
                 {/* Название для мобильной версии - разделено на две строки */}
                 <div className="ml-2 xs:flex sm:hidden flex-col">
                   <span className="text-sm font-bold text-blue-800 leading-tight">{firstLine}</span>
-                  <br/>
+                  <br />
                   <span className="text-sm font-bold text-blue-800 leading-tight">{secondLine}</span>
                 </div>
               </div>
@@ -300,7 +301,7 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
                     <a
                       href={item.link}
                       className="relative px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-300 group text-blue-800 hover:text-teal-600 hover:bg-blue-50 flex items-center"
-                      >
+                    >
                       <span className="relative z-10">{item.title}</span>
                       <div className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-teal-400 transition-all duration-300 group-hover:w-3/4`}></div>
                     </a>
@@ -308,16 +309,14 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
                     // Кнопка с выпадающим меню для остальных пунктов
                     <>
                       <button
-                        className={`relative px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-300 group ${
-                          activeMenu === key
-                            ? 'text-white bg-gradient-to-r from-teal-500 to-emerald-500 shadow-lg'
-                            : 'text-blue-800 hover:text-teal-600 hover:bg-blue-50'
-                        }`}
+                        className={`relative px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-300 group ${activeMenu === key
+                          ? 'text-white bg-gradient-to-r from-teal-500 to-emerald-500 shadow-lg'
+                          : 'text-blue-800 hover:text-teal-600 hover:bg-blue-50'
+                          }`}
                       >
                         <span className="relative z-10">{item.title}</span>
-                        <div className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-teal-400 transition-all duration-300 group-hover:w-3/4 ${
-                          activeMenu === key ? 'w-3/4' : ''
-                        }`}></div>
+                        <div className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-teal-400 transition-all duration-300 group-hover:w-3/4 ${activeMenu === key ? 'w-3/4' : ''
+                          }`}></div>
                       </button>
 
                       {/* Выпадающее меню с анимацией */}
@@ -425,8 +424,8 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
                 aria-expanded={isMenuOpen}
               >
                 <span className="sr-only">
-                  {isMenuOpen 
-                    ? t('nav.close_menu', 'Закрыть меню') 
+                  {isMenuOpen
+                    ? t('nav.close_menu', 'Закрыть меню')
                     : t('nav.open_menu', 'Открыть меню')
                   }
                 </span>
@@ -465,11 +464,10 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
                   <>
                     <button
                       onClick={() => setActiveMenu(activeMenu === key ? null : key)}
-                      className={`w-full text-left flex justify-between items-center px-4 py-4 rounded-xl text-base font-semibold transition-colors duration-200 border-l-4 ${
-                        activeMenu === key
-                          ? 'bg-gradient-to-r from-teal-500 to-emerald-500 text-white shadow-lg border-teal-400'
-                          : 'text-blue-800 hover:bg-teal-50 hover:text-teal-700 border-transparent hover:border-teal-400'
-                      }`}
+                      className={`w-full text-left flex justify-between items-center px-4 py-4 rounded-xl text-base font-semibold transition-colors duration-200 border-l-4 ${activeMenu === key
+                        ? 'bg-gradient-to-r from-teal-500 to-emerald-500 text-white shadow-lg border-teal-400'
+                        : 'text-blue-800 hover:bg-teal-50 hover:text-teal-700 border-transparent hover:border-teal-400'
+                        }`}
                     >
                       {item.title}
                       <svg

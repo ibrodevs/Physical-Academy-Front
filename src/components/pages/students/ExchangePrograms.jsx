@@ -34,6 +34,22 @@ const ExchangePrograms = () => {
 
   const sectionRef = useRef(null);
 
+  // Статичные тексты для трех языков
+  const staticTexts = {
+    en: {
+      mainTitle: "Scholarship Programs and International Exchange Programs",
+      subtitle: "Expand your horizons with our partner universities worldwide and gain invaluable international experience."
+    },
+    ru: {
+      mainTitle: "Стипендиальные программы и международные программы обмена",
+      subtitle: "Расширьте свои горизонты с нашими университетами-партнерами по всему миру и получите бесценный международный опыт."
+    },
+    kg: {
+      mainTitle: "Стипендиялык программалар жана эларалык алмашуу программалары",
+      subtitle: "Дүйнө жүзү боюнча өнөктөш университеттерибиз менен келечегиңизди кеңейтип, баа жеткис эларалык тажрыйба алыңыз."
+    }
+  };
+
   // Получение текущего языка для API
   const getApiLanguage = useCallback(() => {
     const langMap = {
@@ -86,8 +102,8 @@ const ExchangePrograms = () => {
       console.log("Filters:", data.filters);
 
       setBackendData({
-        title: data.title || t("students.exchange.title"),
-        subtitle: data.subtitle || t("students.exchange.subtitle"),
+        title: data.title || staticTexts[lang]?.mainTitle || staticTexts.en.mainTitle,
+        subtitle: data.subtitle || staticTexts[lang]?.subtitle || staticTexts.en.subtitle,
         stats: data.stats || [],
         programs: data.programs || [],
         filters: data.filters || {
@@ -106,11 +122,24 @@ const ExchangePrograms = () => {
     } catch (error) {
       console.error("Error fetching exchange data:", error);
 
-      setBackendData((prev) => ({
-        ...prev,
+      // При ошибке используем статичные тексты
+      const lang = getApiLanguage();
+      setBackendData({
+        title: staticTexts[lang]?.mainTitle || staticTexts.en.mainTitle,
+        subtitle: staticTexts[lang]?.subtitle || staticTexts.en.subtitle,
+        stats: [],
+        programs: [],
+        filters: {
+          regions: [],
+          durations: [],
+        },
+        deadlines: {
+          title: "",
+          list: [],
+        },
         loading: false,
         error: error.message || "Failed to load exchange programs",
-      }));
+      });
     }
   }, [getApiLanguage, t]);
 
@@ -280,6 +309,10 @@ const ExchangePrograms = () => {
     return "";
   };
 
+  // Получаем текущий язык для статичных текстов
+  const currentLang = i18n.language;
+  const staticTitle = staticTexts[currentLang]?.mainTitle || staticTexts.en.mainTitle;
+  const staticSubtitle = staticTexts[currentLang]?.subtitle || staticTexts.en.subtitle;
   return (
     <section
       ref={sectionRef}
@@ -309,426 +342,331 @@ const ExchangePrograms = () => {
           className="text-center mb-12 lg:mb-20"
         >
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight">
-            {backendData.title}
+            {staticTitle}
           </h1>
           <div className="w-24 h-1 bg-gradient-to-r from-blue-400 to-emerald-400 mx-auto mb-6 rounded-full"></div>
           <p className="text-lg md:text-xl text-blue-100 max-w-4xl mx-auto leading-relaxed">
-            {backendData.subtitle}
+            {staticSubtitle}
           </p>
         </motion.div>
 
-        {backendData.loading ? (
-          <div className="text-center py-8">
-            <div className="text-blue-400 text-6xl mb-4">⏳</div>
-            <h2 className="text-2xl text-white mb-4">
-              {t("students.exchange.loading")}
-            </h2>
-          </div>
-        ) : backendData.error ? (
-          <div className="text-center py-8">
-            <div className="text-red-400 text-6xl mb-4">⚠️</div>
-            <h2 className="text-2xl text-white mb-4">
-              {t("common.error") || "Error"}
-            </h2>
-            <p className="text-blue-200">{backendData.error}</p>
-          </div>
-        ) : backendData.programs.length === 0 ? (
-          <div className="text-center py-8">
-            <div className="text-blue-400 text-6xl mb-4">📭</div>
-            <h2 className="text-2xl text-white mb-4">
-              {t("students.exchange.noPrograms") ||
-                "No exchange programs available"}
-            </h2>
-            <p className="text-blue-200">
-              {t("students.exchange.noProgramsDesc") ||
-                "Please check back later for available programs"}
-            </p>
-          </div>
-        ) : (
-          <>
-            {/* Статистика */}
-            {backendData.stats.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={isVisible ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12 lg:mb-16"
-              >
-                {backendData.stats.map((stat, index) => (
-                  <motion.div
-                    key={stat.id || index}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.4 + index * 0.1 }}
-                    className="bg-white/5 rounded-2xl p-6 text-center backdrop-blur-sm border border-white/10 hover:border-emerald-400/30 transition-all duration-300 group"
-                  >
-                    <div className="text-3xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                      {stat.icon || "📊"}
-                    </div>
-                    <div className="text-3xl lg:text-4xl font-bold text-emerald-400 mb-2 group-hover:scale-110 transition-transform duration-300 font-mono">
-                      {stat.value?.includes("%")
-                        ? `${Math.round(counterValues[index])}%`
-                        : stat.value?.includes("+")
-                        ? `${Math.round(counterValues[index])}+`
-                        : Math.round(counterValues[index])}
-                    </div>
-                    <div className="text-blue-200 text-sm lg:text-base">
-                      {stat.label}
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
-            )}
+        {/* Карточки с новостями */}
+        <div className="mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-10">
+            {currentLang === 'ru' ? 'Новости и объявления' :
+              currentLang === 'kg' ? 'Жаңылыктар жана жарыялар' :
+                'News & Announcements'}
+          </h2>
 
-            {/* Фильтры и поиск */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Карточка 1 */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={isVisible ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="bg-white/10 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/20 hover:border-blue-400/50 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/20"
+            >
+              <div className="relative h-48 overflow-hidden">
+                <img
+                  src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+                  alt="Students on campus"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute top-4 left-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                  {currentLang === 'ru' ? 'Новый набор' :
+                    currentLang === 'kg' ? 'Жаңы кабыл алуу' :
+                      'New Intake'}
+                </div>
+              </div>
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-white mb-3">
+                  {currentLang === 'ru' ? 'Осенний набор на обменные программы 2024' :
+                    currentLang === 'kg' ? '2024-жылкы күзгү алмашуу программаларына кабыл алуу' :
+                      'Fall 2024 Exchange Programs Intake'}
+                </h3>
+                <p className="text-blue-100 mb-4">
+                  {currentLang === 'ru' ? 'Открыт прием заявок на осенний семестр 2024 года в университеты-партнеры в Европе и Азии.' :
+                    currentLang === 'kg' ? 'Европа жана Азиядагы өнөктөш университеттерге 2024-жылдын күзгү семестрине каттоо ачылды.' :
+                      'Applications are now open for the Fall 2024 semester at partner universities in Europe and Asia.'}
+                </p>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-blue-300">
+                    {currentLang === 'ru' ? 'Дедлайн: 15 мая 2024' :
+                      currentLang === 'kg' ? 'Акыркы мөөнөт: 2024-жылдын 15-майы' :
+                        'Deadline: May 15, 2024'}
+                  </span>
+                  <button
+                    onClick={() => window.open('/exchange/fall-2024', '_blank')}
+                    className="px-4 py-2 bg-gradient-to-r from-blue-500 to-emerald-500 text-white rounded-lg hover:from-blue-600 hover:to-emerald-600 transition-all duration-300 font-medium"
+                  >
+                    {currentLang === 'ru' ? 'Подробнее →' :
+                      currentLang === 'kg' ? 'Кененирээк →' :
+                        'Learn More →'}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Карточка 2 */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={isVisible ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="bg-white/10 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/20 hover:border-emerald-400/50 transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/20"
+            >
+              <div className="relative h-48 overflow-hidden">
+                <img
+                  src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+                  alt="Scholarship ceremony"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute top-4 left-4 bg-emerald-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                  {currentLang === 'ru' ? 'Стипендия' :
+                    currentLang === 'kg' ? 'Стипендия' :
+                      'Scholarship'}
+                </div>
+              </div>
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-white mb-3">
+                  {currentLang === 'ru' ? 'Полные стипендии в университетах Германии' :
+                    currentLang === 'kg' ? 'Германия университеттеринде толук стипендия' :
+                      'Full Scholarships at German Universities'}
+                </h3>
+                <p className="text-blue-100 mb-4">
+                  {currentLang === 'ru' ? 'DAAD предлагает полные стипендии для магистратуры и PhD в ведущих университетах Германии.' :
+                    currentLang === 'kg' ? 'DAAD Германиянын алдыңкы университеттеринде магистратура жана PhD үчүн толук стипендияларды сунуштайт.' :
+                      'DAAD offers full scholarships for Master and PhD programs at leading German universities.'}
+                </p>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-blue-300">
+                    {currentLang === 'ru' ? 'До: 30 июня 2024' :
+                      currentLang === 'kg' ? 'Чейин: 2024-жылдын 30-июну' :
+                        'Until: June 30, 2024'}
+                  </span>
+                  <button
+                    onClick={() => window.open('/scholarships/germany', '_blank')}
+                    className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white rounded-lg hover:from-emerald-600 hover:to-cyan-600 transition-all duration-300 font-medium"
+                  >
+                    {currentLang === 'ru' ? 'Подробнее →' :
+                      currentLang === 'kg' ? 'Кененирээк →' :
+                        'Learn More →'}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Карточка 3 */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={isVisible ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="bg-white/10 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/20 hover:border-purple-400/50 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/20"
+            >
+              <div className="relative h-48 overflow-hidden">
+                <img
+                  src="https://images.unsplash.com/photo-1524178234883-043d5c3f3cf4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+                  alt="Cultural exchange event"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute top-4 left-4 bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                  {currentLang === 'ru' ? 'Мероприятие' :
+                    currentLang === 'kg' ? 'Иш-чара' :
+                      'Event'}
+                </div>
+              </div>
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-white mb-3">
+                  {currentLang === 'ru' ? 'День международного студента 2024' :
+                    currentLang === 'kg' ? 'Эларалык студент күнү 2024' :
+                      'International Student Day 2024'}
+                </h3>
+                <p className="text-blue-100 mb-4">
+                  {currentLang === 'ru' ? 'Присоединяйтесь к празднованию с культурными представлениями, едой и историями студентов по обмену.' :
+                    currentLang === 'kg' ? 'Маданий көрүнүштөр, тамак-аш жана алмашуу студенттеринин окуялары менен майрамдоого кошулуңуз.' :
+                      'Join the celebration with cultural performances, food, and stories from exchange students.'}
+                </p>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-blue-300">
+                    {currentLang === 'ru' ? '17 ноября 2024' :
+                      currentLang === 'kg' ? '2024-жылдын 17-ноябры' :
+                        'November 17, 2024'}
+                  </span>
+                  <button
+                    onClick={() => window.open('/events/international-day', '_blank')}
+                    className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-300 font-medium"
+                  >
+                    {currentLang === 'ru' ? 'Подробнее →' :
+                      currentLang === 'kg' ? 'Кененирээк →' :
+                        'Learn More →'}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Карточка 4 */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={isVisible ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="bg-white/10 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/20 hover:border-amber-400/50 transition-all duration-300 hover:shadow-2xl hover:shadow-amber-500/20"
+            >
+              <div className="relative h-48 overflow-hidden">
+                <img
+                  src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+                  alt="Workshop session"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute top-4 left-4 bg-amber-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                  {currentLang === 'ru' ? 'Воркшоп' :
+                    currentLang === 'kg' ? 'Воркшоп' :
+                      'Workshop'}
+                </div>
+              </div>
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-white mb-3">
+                  {currentLang === 'ru' ? 'Как успешно подать заявку на программу обмена' :
+                    currentLang === 'kg' ? 'Алмашуу программасына ийгиликтүү кантип каттоодон өтүү керек' :
+                      'How to Successfully Apply for Exchange Programs'}
+                </h3>
+                <p className="text-blue-100 mb-4">
+                  {currentLang === 'ru' ? 'Практический воркшоп по подготовке мотивационных писем, рекомендаций и документов.' :
+                    currentLang === 'kg' ? 'Мотивация каттарын, сунуштарды жана документтерди даярдоо боюнча практикалык воркшоп.' :
+                      'Practical workshop on preparing motivation letters, recommendations, and application documents.'}
+                </p>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-blue-300">
+                    {currentLang === 'ru' ? '25 апреля 2024' :
+                      currentLang === 'kg' ? '2024-жылдын 25-апрели' :
+                        'April 25, 2024'}
+                  </span>
+                  <button
+                    onClick={() => window.open('/workshops/application', '_blank')}
+                    className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg hover:from-amber-600 hover:to-orange-600 transition-all duration-300 font-medium"
+                  >
+                    {currentLang === 'ru' ? 'Зарегистрироваться →' :
+                      currentLang === 'kg' ? 'Катталуу →' :
+                        'Register →'}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Карточка 5 */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={isVisible ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.5 }}
-              className="bg-white/5 rounded-3xl p-6 lg:p-8 backdrop-blur-lg border border-white/20 shadow-2xl mb-8"
+              className="bg-white/10 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/20 hover:border-red-400/50 transition-all duration-300 hover:shadow-2xl hover:shadow-red-500/20"
             >
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Поиск */}
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder={t("students.exchange.searchPlaceholder") || "Search..."}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full px-6 py-4 bg-white/10 border border-white/20 text-white placeholder-blue-300 rounded-2xl focus:outline-none focus:border-emerald-400 transition-all duration-300 backdrop-blur-sm"
-                  />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xl">
-                    🔍
-                  </span>
+              <div className="relative h-48 overflow-hidden">
+                <img
+                  src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+                  alt="University partnership signing"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                  {currentLang === 'ru' ? 'Партнерство' :
+                    currentLang === 'kg' ? 'Өнөктөштүк' :
+                      'Partnership'}
                 </div>
-
-                {/* Фильтр по региону */}
-                <div className="relative">
-                  <select
-                    value={selectedRegion}
-                    onChange={(e) =>
-                      handleFilterChange("region", e.target.value)
-                    }
-                    className="w-full px-6 py-4 bg-white/10 border border-white/20 text-white rounded-2xl focus:outline-none focus:border-emerald-400 transition-all duration-300 backdrop-blur-sm appearance-none cursor-pointer"
-                  >
-                    <option value="all" className="bg-slate-800">
-                      {t("students.exchange.allRegions") || "All Regions"}
-                    </option>
-                    {backendData.filters.regions.map((region) => (
-                      <option
-                        key={region.id}
-                        value={region.id}
-                        className="bg-slate-800"
-                      >
-                        {region.name}
-                      </option>
-                    ))}
-                  </select>
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xl pointer-events-none">
-                    🌍
+              </div>
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-white mb-3">
+                  {currentLang === 'ru' ? 'Новые партнерства с университетами Японии' :
+                    currentLang === 'kg' ? 'Жапония университеттери менен жаңы өнөктөштүктөр' :
+                      'New Partnerships with Japanese Universities'}
+                </h3>
+                <p className="text-blue-100 mb-4">
+                  {currentLang === 'ru' ? 'Подписаны соглашения с 3 университетами Японии для программ обмена и двойных дипломов.' :
+                    currentLang === 'kg' ? 'Алмашуу жана кош диплом программалары үчүн Жапониянын 3 университети менен келишимдер кол коюлду.' :
+                      'Agreements signed with 3 Japanese universities for exchange and double degree programs.'}
+                </p>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-blue-300">
+                    {currentLang === 'ru' ? 'С марта 2024' :
+                      currentLang === 'kg' ? '2024-жылдын мартынан тартып' :
+                        'Starting March 2024'}
                   </span>
-                </div>
-
-                {/* Фильтр по длительности */}
-                <div className="relative">
-                  <select
-                    value={selectedDuration}
-                    onChange={(e) =>
-                      handleFilterChange("duration", e.target.value)
-                    }
-                    className="w-full px-6 py-4 bg-white/10 border border-white/20 text-white rounded-2xl focus:outline-none focus:border-emerald-400 transition-all duration-300 backdrop-blur-sm appearance-none cursor-pointer"
+                  <button
+                    onClick={() => window.open('/partnerships/japan', '_blank')}
+                    className="px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg hover:from-red-600 hover:to-pink-600 transition-all duration-300 font-medium"
                   >
-                    <option value="all" className="bg-slate-800">
-                      {t("students.exchange.allDurations") || "All Durations"}
-                    </option>
-                    {backendData.filters.durations.map((duration) => (
-                      <option
-                        key={duration.id}
-                        value={duration.id}
-                        className="bg-slate-800"
-                      >
-                        {duration.name}
-                      </option>
-                    ))}
-                  </select>
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xl pointer-events-none">
-                    ⏱️
-                  </span>
+                    {currentLang === 'ru' ? 'Подробнее →' :
+                      currentLang === 'kg' ? 'Кененирээк →' :
+                        'Learn More →'}
+                  </button>
                 </div>
               </div>
             </motion.div>
 
-            {/* Список всех программ */}
-            <div className="space-y-6">
-              {filteredPrograms.map((program, index) => (
-                <ProgramCard
-                  key={program.id}
-                  program={program}
-                  index={index}
-                  isExpanded={expandedProgram === index}
-                  isApplying={isApplying === program.id}
-                  onToggle={() => toggleProgram(index)}
-                  onApply={() => handleApply(program.id, program.university)}
+            {/* Карточка 6 */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={isVisible ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              className="bg-white/10 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/20 hover:border-cyan-400/50 transition-all duration-300 hover:shadow-2xl hover:shadow-cyan-500/20"
+            >
+              <div className="relative h-48 overflow-hidden">
+                <img
+                  src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+                  alt="Student success story"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                 />
-              ))}
-            </div>
-          </>
-        )}
+                <div className="absolute top-4 left-4 bg-cyan-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                  {currentLang === 'ru' ? 'История успеха' :
+                    currentLang === 'kg' ? 'Ийгилик окуясы' :
+                      'Success Story'}
+                </div>
+              </div>
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-white mb-3">
+                  {currentLang === 'ru' ? 'Из Кыргызстана в Кембридж: история Айгерим' :
+                    currentLang === 'kg' ? 'Кыргызстандан Кембриджге: Айгеримдин окуясы' :
+                      'From Kyrgyzstan to Cambridge: Aigerim\'s Story'}
+                </h3>
+                <p className="text-blue-100 mb-4">
+                  {currentLang === 'ru' ? 'Выпускница программы обмена делится опытом учебы в одном из лучших университетов мира.' :
+                    currentLang === 'kg' ? 'Алмашуу программасынын бүтүрүүчүсү дүйнөнүн мыкты университеттеринин биринде окуу тажрыйбасын бөлүшөт.' :
+                      'An exchange program graduate shares her experience studying at one of the world\'s top universities.'}
+                </p>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-blue-300">
+                    {currentLang === 'ru' ? 'Интервью' :
+                      currentLang === 'kg' ? 'Интервью' :
+                        'Interview'}
+                  </span>
+                  <button
+                    onClick={() => window.open('/stories/cambridge', '_blank')}
+                    className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 font-medium"
+                  >
+                    {currentLang === 'ru' ? 'Читать →' :
+                      currentLang === 'kg' ? 'Окуу →' :
+                        'Read →'}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Кнопка "Все новости" */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={isVisible ? { opacity: 1 } : {}}
+            transition={{ duration: 0.6, delay: 0.8 }}
+            className="text-center mt-12"
+          >
+            <button
+              onClick={() => window.open('/news', '_blank')}
+              className="px-8 py-3 bg-gradient-to-r from-blue-600 to-emerald-600 text-white rounded-xl hover:from-blue-700 hover:to-emerald-700 transition-all duration-300 font-medium text-lg shadow-lg hover:shadow-xl hover:shadow-blue-500/30"
+            >
+              {currentLang === 'ru' ? 'Все новости и объявления' :
+                currentLang === 'kg' ? 'Бардык жаңылыктар жана жарыялар' :
+                  'All News & Announcements'}
+            </button>
+          </motion.div>
+        </div>
       </div>
     </section>
-  );
-};
-
-// Компонент ProgramCard - обновленная версия с прямыми полями
-const ProgramCard = ({
-  program,
-  index,
-  isExpanded,
-  isApplying,
-  onToggle,
-  onApply,
-}) => {
-  const { t } = useTranslation();
-
-  const common = t("students.exchange.common", { returnObjects: true });
-
-  const getDifficultyColor = (difficulty) => {
-    switch (difficulty) {
-      case "high":
-        return {
-          bg: "bg-red-500/20",
-          text: "text-red-400",
-          border: "border-red-400/30",
-        };
-      case "medium":
-        return {
-          bg: "bg-yellow-500/20",
-          text: "text-yellow-400",
-          border: "border-yellow-400/30",
-        };
-      case "low":
-        return {
-          bg: "bg-green-500/20",
-          text: "text-green-400",
-          border: "border-green-400/30",
-        };
-      default:
-        return {
-          bg: "bg-gray-500/20",
-          text: "text-gray-400",
-          border: "border-gray-400/30",
-        };
-    }
-  };
-
-  const difficultyColors = getDifficultyColor(program.difficulty);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ delay: index * 0.1 }}
-      className="bg-white/5 rounded-3xl border border-white/10 backdrop-blur-sm transition-all duration-300 hover:border-emerald-400/30"
-      whileHover={{ scale: 1.01 }}
-    >
-      <div className="p-6 lg:p-8">
-        <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
-          {/* Основная информация */}
-          <div className="flex-1">
-            <div className="flex items-start justify-between mb-6">
-              <div className="flex-1">
-                <h3 className="text-2xl font-bold text-white mb-3">
-                  {program.university}
-                </h3>
-                <div className="flex flex-wrap items-center gap-4 text-blue-200 mb-4">
-                  <span className="flex items-center gap-2">
-                    <span className="text-lg">🌍</span>
-                    <span>{program.country}</span>
-                  </span>
-                  <span className="flex items-center gap-2">
-                    <span className="text-lg">⏱️</span>
-                    <span>{program.duration}</span>
-                  </span>
-                  <span
-                    className={`px-4 py-2 rounded-2xl text-sm font-medium backdrop-blur-sm border ${difficultyColors.bg} ${difficultyColors.text} ${difficultyColors.border}`}
-                  >
-                    {program.difficulty_label || program.difficulty}
-                  </span>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-2xl font-bold text-emerald-400 mb-1">
-                  {program.cost || common.free}
-                </div>
-                <div className="text-blue-300 text-sm">{common.cost}</div>
-              </div>
-            </div>
-
-            <p className="text-blue-100 mb-6 leading-relaxed text-lg">
-              {program.description}
-            </p>
-
-            {/* Быстрая информация */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <div className="text-center bg-white/5 rounded-2xl p-4 border border-white/10">
-                <div className="text-lg font-bold text-white">
-                  {program.language || common.defaultLanguage}
-                </div>
-                <div className="text-blue-300 text-sm">{common.language}</div>
-              </div>
-              <div className="text-center bg-white/5 rounded-2xl p-4 border border-white/10">
-                <div className="text-lg font-bold text-white">
-                  {program.grants_available || common.grantsAvailable}
-                </div>
-                <div className="text-blue-300 text-sm">{common.grants}</div>
-              </div>
-              <div className="text-center bg-white/5 rounded-2xl p-4 border border-white/10">
-                <div className="text-lg font-bold text-white">
-                  {program.deadline || common.soon}
-                </div>
-                <div className="text-blue-300 text-sm">{common.deadline}</div>
-              </div>
-              <div className="text-center bg-white/5 rounded-2xl p-4 border border-white/10">
-                <div className="text-lg font-bold text-white">
-                  {program.available_spots || common.defaultSpots}
-                </div>
-                <div className="text-blue-300 text-sm">{common.spots}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Действия */}
-          <div className="lg:w-56 flex flex-col gap-4">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={onApply}
-              disabled={isApplying || program.available_spots === 0}
-              className={`w-full py-4 px-6 rounded-2xl font-medium transition-all duration-300 flex items-center justify-center backdrop-blur-sm ${
-                program.available_spots > 0 && !isApplying
-                  ? "bg-gradient-to-r from-blue-500 to-emerald-500 text-white hover:from-blue-600 hover:to-emerald-600 shadow-lg"
-                  : "bg-white/10 text-blue-300 cursor-not-allowed border border-white/10"
-              }`}
-            >
-              {isApplying ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-3"></div>
-                  {common.sending}
-                </>
-              ) : (
-                <>
-                  <span className="text-xl mr-3">📝</span>
-                  {common.apply}
-                </>
-              )}
-            </motion.button>
-
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={onToggle}
-              className="w-full py-4 px-6 bg-white/10 border border-white/10 text-white rounded-2xl hover:border-emerald-400/30 transition-all duration-300 font-medium flex items-center justify-center backdrop-blur-sm"
-            >
-              <span className="text-xl mr-3">{isExpanded ? "📋" : "🔍"}</span>
-              {isExpanded ? common.collapse : common.more}
-            </motion.button>
-
-            {program.website && (
-              <motion.a
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                href={program.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-4 px-6 bg-white/10 border border-emerald-400 text-emerald-400 rounded-2xl hover:bg-emerald-400/10 transition-all duration-300 font-medium flex items-center justify-center backdrop-blur-sm"
-              >
-                <span className="text-xl mr-3">🌐</span>
-                {common.website}
-              </motion.a>
-            )}
-          </div>
-        </div>
-
-        {/* Расширенная информация */}
-        <AnimatePresence>
-          {isExpanded && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="mt-8 pt-8 border-t border-white/20 space-y-8"
-            >
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Требования */}
-                <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 rounded-2xl p-6 border border-blue-400/30 backdrop-blur-sm">
-                  <h4 className="font-semibold text-white mb-4 flex items-center gap-3 text-lg">
-                    <span className="text-xl">📋</span>
-                    <span>{common.requirements}</span>
-                  </h4>
-                  <ul className="space-y-3">
-                    {(program.requirements || []).map((req, reqIndex) => (
-                      <li
-                        key={reqIndex}
-                        className="flex items-start text-blue-200"
-                      >
-                        <span className="text-emerald-400 mr-3 mt-1 text-lg">
-                          •
-                        </span>
-                        {req.text}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Преимущества */}
-                <div className="bg-gradient-to-r from-emerald-500/10 to-green-500/10 rounded-2xl p-6 border border-emerald-400/30 backdrop-blur-sm">
-                  <h4 className="font-semibold text-white mb-4 flex items-center gap-3 text-lg">
-                    <span className="text-xl">⭐</span>
-                    <span>{common.benefits}</span>
-                  </h4>
-                  <ul className="space-y-3">
-                    {(program.benefits || []).map((benefit, benefitIndex) => (
-                      <li
-                        key={benefitIndex}
-                        className="flex items-start text-blue-200"
-                      >
-                        <span className="text-emerald-400 mr-3 mt-1 text-lg">
-                          ✓
-                        </span>
-                        {benefit.text}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              {/* Доступные курсы */}
-              {program.available_courses &&
-                program.available_courses.length > 0 && (
-                  <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl p-6 border border-purple-400/30 backdrop-blur-sm">
-                    <h4 className="font-semibold text-white mb-4 flex items-center gap-3 text-lg">
-                      <span className="text-xl">📚</span>
-                      <span>{common.availableCourses}</span>
-                    </h4>
-                    <div className="flex flex-wrap gap-3">
-                      {program.available_courses.map((course, courseIndex) => (
-                        <span
-                          key={courseIndex}
-                          className="px-4 py-2 bg-white/10 text-blue-200 rounded-2xl text-sm font-medium backdrop-blur-sm border border-white/10 hover:border-emerald-400/30 transition-all duration-300"
-                        >
-                          {course.name}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </motion.div>
   );
 };
 

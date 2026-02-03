@@ -1565,6 +1565,8 @@
     "subtitle": "Become leader in sports world through innovative research programs and advanced training methods",
     "masterTitle": "Master's",
     "phdTitle": "PhD",
+    "applicantTitle": "Information for Applicants",
+    "contactsAdressTitle": "Contacts and Address",
     "generalInfo": "General Information",
     "programsAndRequirements": "Programs & Requirements",
     "studyPrograms": "Study Programs",
@@ -4116,6 +4118,7 @@
       },
       "uiTexts": {
         "supportServices": "Support Services",
+        "mainHeader": "Available Services and Academic Support for Successful Learning",
         "contactUs": "Contact Us",
         "resources": "Helpful Resources",
         "emergencyTitle": "Emergency Contacts",

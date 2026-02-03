@@ -133,7 +133,7 @@ const BachelorContacts = () => {
           </p>
         </div>
 
-        <div className={`grid lg:grid-cols-2 gap-6 md:gap-8 mb-12 transition-all duration-1000 delay-300 ${
+        <div className={`grid lg:grid-cols-3 gap-4 md:gap-5 mb-12 transition-all duration-1000 delay-300 ${
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
         }`}>
           {/* Contact Information */}

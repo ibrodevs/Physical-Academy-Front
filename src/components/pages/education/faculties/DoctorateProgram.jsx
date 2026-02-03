@@ -12,7 +12,7 @@ const DoctorateProgram = () => {
   const [errorDetails, setErrorDetails] = useState(null);
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [activeContent, setActiveContent] = useState('info'); // 'info', 'plan', 'disciplines', 'staff'
-  const [programType, setProgramType] = useState('doctorate'); // 'doctorate', 'aspirantura'
+  const [programType, setProgramType] = useState('doctorate'); // 'doctorate', 'aspirantura', 'phd'
 
   // Статичные данные категорий для разных программ
   const doctorateCategories = [
@@ -73,8 +73,34 @@ const DoctorateProgram = () => {
     }
   ];
 
+  const phdCategories = [
+    { 
+      id: 20, 
+      name: 'Кафедра физического воспитания и спорта',
+      color: 'purple-600',
+      description: 'Кафедра готовит высокопрофессиональных докторов PhD в области физической культуры и спорта.',
+      staff: [
+        { id: 21, name: 'Назаров Назар Назарович', position: 'Профессор', phone: '+996 312 654321', email: 'nazarov@kgafkis.kg', photo: '/default-avatar.png' },
+        { id: 22, name: 'Турусбеков Турус Туруsowич', position: 'Доцент', phone: '+996 312 654322', email: 'turusbekov@kgafkis.kg', photo: '/default-avatar.png' }
+      ]
+    },
+    { 
+      id: 21, 
+      name: 'Кафедра тренерской подготовки',
+      color: 'indigo-700',
+      description: 'Подготавливает высокопрофессиональных докторов PhD в области тренерства и спорта.',
+      staff: [
+        { id: 23, name: 'Абдуллаев Абдула Абдулаевич', position: 'Профессор', phone: '+996 312 654323', email: 'abdullayev@kgafkis.kg', photo: '/default-avatar.png' },
+        { id: 24, name: 'Жунусов Жунус Жунусович', position: 'Доцент', phone: '+996 312 654324', email: 'zhunusov@kgafkis.kg', photo: '/default-avatar.png' }
+      ]
+    }
+  ];
+
   // Выбираем категории в зависимости от типа программы
-  const staticCategories = programType === 'doctorate' ? doctorateCategories : aspiranturaCategories;
+  const staticCategories = 
+    programType === 'doctorate' ? doctorateCategories : 
+    programType === 'aspirantura' ? aspiranturaCategories : 
+    phdCategories;
 
   // Получаем список всех кафедр
   useEffect(() => {
@@ -156,9 +182,9 @@ const DoctorateProgram = () => {
       case 'plan':
         return (
           <div className="text-center py-8">
-            <h3 className="text-xl font-semibold text-gray-700 mb-4">УЧЕБНЫЙ ПЛАН</h3>
+            <h3 className="text-xl font-semibold text-gray-700 mb-4">{t('doctorateProgram.tabs.plan', 'УЧЕБНЫЙ ПЛАН')}</h3>
             <a href="https://myedu.kgafkis.kg/" target="_blank" rel="noopener noreferrer" className="inline-block bg-blue-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-600 transition-colors">
-              Перейти к учебному плану
+              {t('doctorateProgram.goToPlan', 'Перейти к учебному плану')}
             </a>
           </div>
         );
@@ -166,9 +192,9 @@ const DoctorateProgram = () => {
       case 'disciplines':
         return (
           <div className="text-center py-8">
-            <h3 className="text-xl font-semibold text-gray-700 mb-4">ДИСЦИПЛИНЫ</h3>
+            <h3 className="text-xl font-semibold text-gray-700 mb-4">{t('doctorateProgram.tabs.disciplines', 'ДИСЦИПЛИНЫ')}</h3>
             <a href="https://myedu.kgafkis.kg/" target="_blank" rel="noopener noreferrer" className="inline-block bg-blue-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-600 transition-colors">
-              Перейти к дисциплинам
+              {t('doctorateProgram.goDisciplines', 'Перейти к дисциплинам')}
             </a>
           </div>
         );
@@ -176,7 +202,7 @@ const DoctorateProgram = () => {
       case 'staff':
         return (
           <div>
-            <h3 className="text-xl font-semibold text-gray-700 mb-4">СОТРУДНИКИ</h3>
+            <h3 className="text-xl font-semibold text-gray-700 mb-4">{t('doctorateProgram.tabs.staff', 'СОТРУДНИКИ')}</h3>
             {selectedTeacher ? (
               <div className="bg-white rounded-2xl border-4 border-blue-300 p-12 shadow-2xl mb-8">
                 <div className="flex flex-col md:flex-row gap-12 items-center">
@@ -263,16 +289,26 @@ const DoctorateProgram = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-blue-900 mb-4">
-            {t('doctorate.title', 'Докторские программы')}
+            {programType === 'doctorate' 
+              ? t('doctorate.title', 'Докторантура')
+              : programType === 'aspirantura'
+              ? t('aspirantura.title', 'Аспирантура')
+              : t('phd.title', 'PhD программа')
+            }
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            {t('doctorate.description', 'Программы Докторантуры и Аспирантуры')}
+            {programType === 'doctorate'
+              ? t('doctorate.description', 'Программа подготовки докторов в области физической культуры и спорта')
+              : programType === 'aspirantura'
+              ? t('aspirantura.description', 'Программа подготовки аспирантов для научных исследований')
+              : t('phd.description', 'Программа подготовки докторов философии (PhD) с международными стандартами')
+            }
           </p>
         </div>
 
-        {/* Program Type Tabs - 2 кнопки */}
+        {/* Program Type Tabs - 3 кнопки */}
         <div className="flex flex-wrap justify-center gap-4 mb-12">
-          {['doctorate', 'aspirantura'].map((type) => (
+          {['doctorate', 'aspirantura', 'phd'].map((type) => (
             <button
               key={type}
               onClick={() => {
@@ -287,7 +323,7 @@ const DoctorateProgram = () => {
                   : 'bg-white text-gray-700 border-b-2 border-gray-200 hover:bg-gray-50'
               }`}
             >
-              {type === 'doctorate' ? 'Докторантура' : 'Аспирантура'}
+              {type === 'doctorate' ? 'Докторантура' : type === 'aspirantura' ? 'Аспирантура' : 'PhD'}
             </button>
           ))}
         </div>
@@ -370,10 +406,10 @@ const DoctorateProgram = () => {
             <div className="lg:col-span-1">
               <div className="sticky top-8 space-y-4">
                 {[
-                  { id: 'info', title: 'ИНФОРМАЦИЯ', subtitle: 'О кафедре' },
-                  { id: 'plan', title: 'УЧЕБНЫЙ ПЛАН', subtitle: '(ССЫЛКА НА My EDU)' },
-                  { id: 'disciplines', title: 'ДИСЦИПЛИНЫ', subtitle: '(ССЫЛКА НА My EDU)' },
-                  { id: 'staff', title: 'СОТРУДНИКИ', subtitle: '(СПИСОК ФИО)' }
+                  { id: 'info', title: t('doctorateProgram.tabs.info', 'ИНФОРМАЦИЯ'), subtitle: t('doctorateProgram.subtitles.info', 'О кафедре') },
+                  { id: 'plan', title: t('doctorateProgram.tabs.plan', 'УЧЕБНЫЙ ПЛАН'), subtitle: t('doctorateProgram.subtitles.plan', '(ССЫЛКА НА My EDU)') },
+                  { id: 'disciplines', title: t('doctorateProgram.tabs.disciplines', 'ДИСЦИПЛИНЫ'), subtitle: t('doctorateProgram.subtitles.disciplines', '(ССЫЛКА НА My EDU)') },
+                  { id: 'staff', title: t('doctorateProgram.tabs.staff', 'СОТРУДНИКИ'), subtitle: t('doctorateProgram.subtitles.staff', '(СПИСОК ФИО)') }
                 ].map((btn) => (
                   <button
                     key={btn.id}

@@ -136,14 +136,14 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
         title: t('nav.master_program', 'Магистратура'),
         hasNested: true,
         nestedItems: [
-          { title: t('nav.general_info', 'Общая информация'), link: '/education/master/info' },
+          { title: t('nav.general_info', 'Общая информация'), link: '/education/faculties/master' },
         ]
       },
       { 
         title: t('nav.doctorate_program', 'Аспирантура, Докторантура, PhD'),
         hasNested: true,
         nestedItems: [
-          { title: t('nav.general_info', 'Общая информация'), link: '/education/doctorate/info' },
+          { title: t('nav.general_info', 'Общая информация'), link: '/education/faculties/doctorate' },
         ]
       },
       { 

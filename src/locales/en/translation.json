@@ -34,6 +34,7 @@
     "contacts": "Contacts",
     "master_phd": "Master's/Graduate",
     "doctorate": "Doctorate",
+    "doctorate_program": "Postgraduate, Doctorate, PhD",
     "college": "College",
     "education": "Education",
     "faculties": "Faculties",
@@ -757,8 +758,8 @@
     }
   },
   "bachelor": {
-    "title": "BACHELOR'S DEGREE",
-    "subtitle": "Training highly qualified specialists in physical culture and sports",
+    "title": "APPLICANT",
+    "subtitle": "Modern educational programs corresponding to international standards and industry requirements",
     "faculties": {
       "title": "FACULTIES",
       "sports": {
@@ -828,7 +829,43 @@
       "scheduleTitle": "Working Hours",
       "weekdays": "Mon-Fri: 8:00 - 17:00, lunch 12:00 - 13:00",
       "saturday": "Sat: Closed",
-      "sunday": "Sun: Closed"
+      "sunday": "Sun: Closed",
+      "departments": {
+        "admission": {
+          "name": "Admission Commission",
+          "hours": "Mon-Fri: 9:00-18:00",
+          "description": "Admission questions, documents, entrance exams"
+        },
+        "international": {
+          "name": "International Department",
+          "hours": "Mon-Fri: 10:00-17:00",
+          "description": "For international applicants, visa support"
+        },
+        "quotas": {
+          "name": "Quotas and Grants Department",
+          "hours": "Mon-Thu: 9:00-17:00, Fri: 9:00-16:00",
+          "description": "Budget places, scholarships, educational grants"
+        },
+        "general": {
+          "name": "General Department",
+          "hours": "Mon-Fri: 8:00-19:00",
+          "description": "General questions, administrative issues"
+        }
+      },
+      "faqs": [
+        {
+          "question": "What documents are needed for admission?",
+          "answer": "For admission, you need: passport, education document, 3x4 photos, medical certificate. Check the full list at the admissions office."
+        },
+        {
+          "question": "Are there budget places?",
+          "answer": "Yes, we provide budget places in various directions. The number of places is limited and distributed based on entrance exam results."
+        },
+        {
+          "question": "What is the document submission deadline?",
+          "answer": "Document acceptance starts June 20 and continues until August 10 for bachelor's programs. We recommend submitting documents early."
+        }
+      ]
     },
     "additionalInfo": {
       "title": "ADDITIONAL INFORMATION",
@@ -938,7 +975,7 @@
       }
     },
     "title": "Bachelor's Degree",
-    "subtitle": "Start your successful IT career with our bachelor's programs",
+    "subtitle": "Modern educational programs that meet international standards and industry requirements",
     "tabs": {
       "info": "Programs",
       "registration": "Admission",
@@ -9438,6 +9475,39 @@
         "pedagogy": "Pedagogy and Psychology Department",
         "pedagogyDesc": "Sports pedagogy and psychology"
       }
+    }
+  },
+  "aspirantura": {
+    "title": "Postgraduate",
+    "description": "Program for preparing postgraduate students for scientific research and dissertation writing"
+  },
+  "phd": {
+    "title": "PhD Program",
+    "description": "Doctor of Philosophy (PhD) program with international standards"
+  },
+  "doctorateProgram": {
+    "tabs": {
+      "info": "INFORMATION",
+      "plan": "CURRICULUM",
+      "disciplines": "DISCIPLINES",
+      "staff": "STAFF"
+    },
+    "subtitles": {
+      "info": "About Department",
+      "plan": "(LINK TO My EDU)",
+      "disciplines": "(LINK TO My EDU)",
+      "staff": "(LIST OF NAMES)"
+    },
+    "goToPlan": "Go to Curriculum",
+    "goDisciplines": "Go to Disciplines"
+  },
+  "bachelor": {
+    "socialNetworks": {
+      "title": "FOLLOW US",
+      "subtitle": "Subscribe to our social media for the latest news and updates"
+    },
+    "contacts": {
+      "socialTitle": "Social Networks"
     }
   }
 }

@@ -71,171 +71,180 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
 
   // Данные меню для КГАФКиС
   const menuData = {
-    academy: {
-      title: t('nav.academy', 'Академия'),
-      submenu: [
-        { 
-          title: t('nav.about_academyy', 'Об академии'),
-          hasNested: true,
-          nestedItems: [
-            { title: t('nav.about_academy', 'Об академии'), link: '/academy/about' },
-            { title: t('nav.history', 'История'), link: '/academy/history' },
-            { title: t('nav.mission_strategy', 'Миссия и стратегия'), link: '/academy/mission' },
-            { title: t('nav.accreditation', 'Аккредитация'), link: '/academy/accreditation' },
-            { title: t('nav.kgafkis_in_numbers', 'КГАФКиС в цифрах'), link: '/academy/numbers' },
-          ]
-        },
-        { 
-          title: t('nav.leadership', 'Руководство'),
-          hasNested: true,
-          nestedItems: [
-            { title: t('nav.board_of_trustees', 'Попечительский совет'), link: '/academy/leadership/board-of-trustees' },
-            { title: t('nav.audit_commission', 'Ревизионная комиссия'), link: '/academy/leadership/audit-commission' },
-            { title: t('nav.academic_council', 'Ученый совет'), link: '/academy/leadership/academic-council' },
-            { title: t('nav.rectorate', 'Ректорат'), link: '/academy/leadership/rectorate' },
-            { title: t('nav.trade_union', 'Профсоюз'), link: '/academy/leadership/trade-union' },
-            { title: t('nav.commissions', 'Комиссии'), link: '/academy/leadership/commissions' },
-            { title: t('nav.administrative_structure', 'Административная структура'), link: '/academy/structure/administrative' },
-            { title: t('nav.administrative_units', 'Административные подразделения'), link: '/academy/structure/units' },
-            { title: t('nav.documents', 'Документы'), link: '/academy/documents' },
-          ]
-        }
-      ]
-    },
-    
-    education: {
-      title: t('nav.education', 'Образование'),
-      submenu: [
-        {
-          title: t('nav.faculties', 'Факультеты'),
-          hasNested: true,
-          nestedItems: [
-            { 
-              title: t('nav.pedagogical_national_sports', 'Педагогический и национальные виды спорта'),
-              link: '/education/faculties/pedagogical'
-            },
-            { 
-              title: t('nav.coaching_faculty', 'Тренерский факультет'),
-              link: '/education/faculties/coaching'
-            },
-            { 
-              title: t('nav.military_training_physical_culture', 'Военная подготовка и физическая культура'),
-              link: '/education/faculties/military-training'
-            },
-            { 
-              title: t('nav.correspondence_advanced_training', 'Заочное обучение и повышение квалификации'),
-              link: '/education/faculties/correspondence'
-            },
-            { 
-              title: t('nav.general_faculty_departments', 'Общефакультетские кафедры'),
-              link: '/education/departments'
-            }
-          ]
-        },
-        { title: t('nav.master_program', 'Магистратура'), link: '/education/faculties/master' },
-        { title: t('nav.doctorate', 'Докторантура'), link: '/education/faculties/doctorate' },
-        { 
-          title: t('nav.college', 'Колледж'),
-          hasNested: true,
-          nestedItems: [
-            { title: t('nav.college_physical_culture_sports', 'Колледж физической культуры и спорта'), link: '/education/college/sports' },
-          ]
-        },
-      ]
-    },
-    sport: {
-      title: t('nav.sport', 'Спорт'),
-      submenu: [
-        { title: t('nav.sections', 'Секции'), link: '/sport/sections' },
-        { title: t('nav.infrastructure', 'Инфраструктура'), link: '/sport/infrastructure' },
-        { title: t('nav.achievements', 'Спортивные достижения'), link: '/sport/achievements' },
-      ]
-    },
-    science: {
-      title: t('nav.science', 'Наука'),
-      submenu: [
-        { title: t('nav.scientific_publications', 'Научные публикации'), link: '/science/publications' },
-        { title: t('nav.vestnik', 'Вестник'), link: '/science/vestnik' },
-        { title: t('nav.web_of_science', 'Web of Science'), link: '/science/web-of-science' },
-        { title: t('nav.ipchain', 'IPChain'), link: '/science/ipchain' },
-        // { title: t('nav.scopus', 'Scopus'), link: '/science/scopus' },
-        { title: t('nav.research_and_technical_council', 'Научно-технический совет'), link: '/science/nts-committee' },
-        { title: t('nav.student_scientific_society', 'Студенческое научное общество'), link: '/science/ssu' }
-      ]
-    },
-    admissions: {
-      title: t('nav.admissions', 'Поступление'),
-      submenu: [
-        { 
-          title: t('nav.bachelor', 'Бакалавриат'),
-          hasNested: true,
-          nestedItems: [
-            { title: t('nav.general_info', 'Общая информация'), link: '/admissions/bachelor/info' },
-            { title: t('nav.registration', 'Регистрация'), link: '/admissions/bachelor/registration' },
-            { title: t('nav.international_applicants', 'Иностранные абитуриенты'), link: '/admissions/bachelor/international' },
-            { title: t('nav.quotas', 'Квоты'), link: '/admissions/bachelor/quotas' },
-            { title: t('nav.contacts', 'Контакты'), link: '/admissions/bachelor/contacts' },
-          ]
-        },
-        { 
-          title: t('nav.master_phd', 'Магистратура'),
-          hasNested: true,
-          nestedItems: [
-            { title: t('nav.general_info', 'Общая информация'), link: '/admissions/master/info' },
-          ]
-        },
-        {
-          title: t('nav.doctorate', 'Докторантура'),
-          hasNested: true,
-          nestedItems: [
-            { title: t('nav.general_info', 'Общая информация'), link: '/admissions/doctorate/info' },
-          ]
-        },
-        { 
-          title: t('nav.college', 'Колледж'),
-          hasNested: true,
-          nestedItems: [
-            { title: t('nav.general_info', 'Общая информация'), link: '/admissions/college/info' },
-          ]
-        },
-      ]
-    },
-    students: {
-      title: t('nav.students', 'Студентам'),
-      submenu: [
-        {
-          title: t('nav.useful_information', 'Полезная информация'),
-          hasNested: true,
-          nestedItems: [
-            { title: t('nav.students_with_disabilities', 'Студенты с ограниченными возможностями'), link: '/students/disabilities' },
-            { title: t('nav.student_council', 'Студенческий совет'), link: '/students/council' },
-            { title: t('nav.exchange_programs', 'Программы обмена'), link: '/students/exchange' },
-            { title: t('nav.instructions', 'Инструкции'), link: '/students/instructions' },
-            { title: t('nav.scholarship', 'Стипендия'), link: '/students/scholarship' }
-          ]
-        },
-        {
-          title: t('nav.useful_links', 'Полезные ссылки'),
-          hasNested: true,
-          nestedItems: [
-            { title: t('nav.visa_support', 'Визовая поддержка'), link: '/students/visa-support' }
-          ]
-        }
-      ]
-    },
-    myEdu: {
-      title: t('nav.my_edu', 'Моё образование'),
-      link: 'https://myedu.kgafkis.kg/'
-    },
-    contacts: {
-      title: t('nav.contacts', 'Контакты'),
-      submenu: [
-        { title: t('nav.address_map', 'Адрес и карта'), link: '/contacts/address' },
-        { title: t('nav.phones_email', 'Телефоны и email'), link: '/contacts/contact-info' },
-        { title: t('nav.social_networks', 'Социальные сети'), link: '/contacts/social' },
-      ]
-    }
-  };
+  academy: {
+    title: t('nav.academy', 'Академия'),
+    submenu: [
+      { 
+        title: t('nav.about_academyy', 'Об академии'),
+        hasNested: true,
+        nestedItems: [
+          { title: t('nav.about_academy', 'Об академии'), link: '/academy/about' },
+          { title: t('nav.history', 'История'), link: '/academy/history' },
+          { title: t('nav.mission_strategy', 'Миссия и стратегия'), link: '/academy/mission' },
+          { title: t('nav.accreditation', 'Аккредитация'), link: '/academy/accreditation' },
+          { title: t('nav.kgafkis_in_numbers', 'КГАФКиС в цифрах'), link: '/academy/numbers' },
+        ]
+      },
+      { 
+        title: t('nav.leadership', 'Руководство'),
+        hasNested: true,
+        nestedItems: [
+          { title: t('nav.board_of_trustees', 'Попечительский совет'), link: '/academy/leadership/board-of-trustees' },
+          { title: t('nav.audit_commission', 'Ревизионная комиссия'), link: '/academy/leadership/audit-commission' },
+          { title: t('nav.academic_council', 'Ученый совет'), link: '/academy/leadership/academic-council' },
+          { title: t('nav.rectorate', 'Ректорат'), link: '/academy/leadership/rectorate' },
+          { title: t('nav.trade_union', 'Профсоюз'), link: '/academy/leadership/trade-union' },
+          { title: t('nav.commissions', 'Комиссии'), link: '/academy/leadership/commissions' },
+          { title: t('nav.administrative_structure', 'Административная структура'), link: '/academy/structure/administrative' },
+          { title: t('nav.administrative_units', 'Административные подразделения'), link: '/academy/structure/units' },
+          { title: t('nav.documents', 'Документы'), link: '/academy/documents' },
+        ]
+      }
+    ]
+  },
+  
+  education: {
+    title: t('nav.education', 'Образование'),
+    submenu: [
+      {
+        title: t('nav.faculties', 'Факультеты'),
+        hasNested: true,
+        nestedItems: [
+          { 
+            title: t('nav.pedagogical_national_sports', 'Педагогический и национальные виды спорта'),
+            link: '/education/faculties/pedagogical'
+          },
+          { 
+            title: t('nav.coaching_faculty', 'Тренерский факультет'),
+            link: '/education/faculties/coaching'
+          },
+          { 
+            title: t('nav.military_training_physical_culture', 'Военная подготовка и физическая культура'),
+            link: '/education/faculties/military-training'
+          },
+          { 
+            title: t('nav.correspondence_advanced_training', 'Заочное обучение и повышение квалификации'),
+            link: '/education/faculties/correspondence'
+          },
+          { 
+            title: t('nav.general_faculty_departments', 'Общефакультетские кафедры'),
+            link: '/education/departments'
+          }
+        ]
+      },
+      { 
+        title: t('nav.master_program', 'Магистратура'),
+        hasNested: true,
+        nestedItems: [
+          { title: t('nav.general_info', 'Общая информация'), link: '/education/master/info' },
+        ]
+      },
+      { 
+        title: t('nav.doctorate_program', 'Аспирантура, Докторантура, PhD'),
+        hasNested: true,
+        nestedItems: [
+          { title: t('nav.general_info', 'Общая информация'), link: '/education/doctorate/info' },
+        ]
+      },
+      { 
+        title: t('nav.college', 'Колледж'),
+        hasNested: true,
+        nestedItems: [
+          { title: t('nav.college_physical_culture_sports', 'Колледж физической культуры и спорта'), link: '/education/college/sports' },
+        ]
+      },
+    ]
+  },
+  
+  sport: {
+    title: t('nav.sport', 'Спорт'),
+    submenu: [
+      { title: t('nav.graduates', 'Выпускники'), link: '/sport/graduates' },
+      { title: t('nav.achievements', 'Спортивные достижения'), link: '/sport/achievements' },
+    ]
+  },
+  
+  science: {
+    title: t('nav.science', 'Наука'),
+    submenu: [
+      { title: t('nav.scientific_publications', 'Научные публикации'), link: '/science/publications' },
+      { title: t('nav.vestnik', 'Вестник'), link: '/science/vestnik' },
+      { title: t('nav.web_of_science', 'Web of Science'), link: '/science/web-of-science' },
+      { title: t('nav.ipchain', 'IPChain'), link: '/science/ipchain' },
+      { title: t('nav.research_and_technical_council', 'Научно-технический совет'), link: '/science/nts-committee' },
+      { title: t('nav.student_scientific_society', 'Студенческое научное общество'), link: '/science/ssu' }
+    ]
+  },
+  
+  admissions: {
+    title: t('nav.admissions', 'Поступление'),
+    submenu: [
+      { 
+        title: t('nav.applicant', 'Абитурент'),
+        hasNested: true,
+        nestedItems: [
+          { title: t('nav.general_info', 'Общая информация'), link: '/admissions/bachelor/info' },
+          { title: t('nav.registration', 'Регистрация'), link: '/admissions/bachelor/registration' },
+          { title: t('nav.international_applicants', 'Иностранные абитуриенты'), link: '/admissions/bachelor/international' },
+          { title: t('nav.quotas', 'Квоты'), link: '/admissions/bachelor/quotas' },
+          { title: t('nav.contacts', 'Контакты'), link: '/admissions/bachelor/contacts' },
+        ]
+      },
+      { 
+        title: t('nav.master_program', 'Магистратура'),
+        hasNested: true,
+        nestedItems: [
+          { title: t('nav.general_info', 'Общая информация'), link: '/admissions/master/info' },
+        ]
+      },
+      { 
+        title: t('nav.doctorate_program', 'Аспирантура, Докторантура, PhD'),
+        hasNested: true,
+        nestedItems: [
+          { title: t('nav.general_info', 'Общая информация'), link: '/admissions/doctorate/info' },
+        ]
+      },
+    ]
+  },
+  
+  students: {
+    title: t('nav.students', 'Студентам'),
+    submenu: [
+      {
+        title: t('nav.useful_information', 'Полезная информация'),
+        hasNested: true,
+        nestedItems: [
+          { title: t('nav.students_with_disabilities', 'Студенты с ограниченными возможностями'), link: '/students/disabilities' },
+          { title: t('nav.student_council', 'Студенческий совет'), link: '/students/council' },
+          { title: t('nav.exchange_programs', 'Программы обмена'), link: '/students/exchange' },
+          { title: t('nav.instructions', 'Инструкции'), link: '/students/instructions' },
+          { title: t('nav.scholarship', 'Стипендия'), link: '/students/scholarship' }
+        ]
+      },
+      {
+        title: t('nav.useful_links', 'Полезные ссылки'),
+        hasNested: true,
+        nestedItems: [
+          { title: t('nav.visa_support', 'Визовая поддержка'), link: '/students/visa-support' }
+        ]
+      }
+    ]
+  },
+  
+  myEdu: {
+    title: t('nav.my_edu', 'Моё образование'),
+    link: 'https://myedu.kgafkis.kg/'
+  },
+  
+  contacts: {
+    title: t('nav.contacts', 'Контакты'),
+    submenu: [
+      { title: t('nav.address_map', 'Адрес и карта'), link: '/contacts/address' },
+      { title: t('nav.phones_email', 'Телефоны и email'), link: '/contacts/contact-info' },
+      { title: t('nav.social_networks', 'Социальные сети'), link: '/contacts/social' },
+    ]
+  }
+};
 
   // Разделяем текст для мобильной версии
   const [firstLine] = splitText(t('nav.kgafkis1', 'КГАФКиС'));

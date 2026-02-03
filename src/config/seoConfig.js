@@ -223,6 +223,44 @@ export const seoConfig = {
         description: "Address: Bishkek, Akhunbaeva St., 97. Phone: +996 (312) 57-04-89. Directions map, academy departments.",
         keywords: "contacts, address, phone, how to get, map"
       }
+    },
+
+    // Магистратура
+    masterProgram: {
+      ru: {
+        title: "Магистерские программы | КГАФКиС",
+        description: "Магистерские программы и специализации КГАФКиС. Углубленное образование в спортивной науке.",
+        keywords: "магистерские программы, специализации, спортивная наука"
+      },
+      kg: {
+        title: "Магистрдик программалар | КГАФКиС",
+        description: "КГАФКиСтин магистрдик программалары жана адистиктери. Спорттук илимде терең билим.",
+        keywords: "магистрдик программалар, адистиктер, спорттук илим"
+      },
+      en: {
+        title: "Master's Programs | KGAPCS",
+        description: "KGAPCS master's programs and specializations. Advanced education in sports science.",
+        keywords: "master programs, specializations, sports science"
+      }
+    },
+
+    // Докторантура
+    doctorateProgram: {
+      ru: {
+        title: "Докторские программы | КГАФКиС",
+        description: "Докторские программы и научные исследования КГАФКиС. Подготовка научных кадров.",
+        keywords: "докторские программы, научные исследования, подготовка кадров"
+      },
+      kg: {
+        title: "Докторлук программалар | КГАФКиС",
+        description: "КГАФКиСтин докторлук программалары жана илимий изилдөөлөрү. Илимий кадрларды даярдоо.",
+        keywords: "докторлук программалар, илимий изилдөөлөр, кадрларды даярдоо"
+      },
+      en: {
+        title: "Doctoral Programs | KGAPCS",
+        description: "KGAPCS doctoral programs and scientific research. Training of scientific personnel.",
+        keywords: "doctoral programs, scientific research, personnel training"
+      }
     }
   }
 };

@@ -69,7 +69,7 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
     return [firstLine, secondLine];
   };
 
-  // Данные меню для КГАФКиС
+  // Данные меню для КГАФКиС - используем объединенную версию
   const menuData = {
     academy: {
       title: t('nav.academy', 'Академия'),
@@ -132,8 +132,20 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
             }
           ]
         },
-        { title: t('nav.master_program', 'Магистратура'), link: '/education/faculties/master' },
-        { title: t('nav.doctorate', 'Докторантура'), link: '/education/faculties/doctorate' },
+        {
+          title: t('nav.master_program', 'Магистратура'),
+          hasNested: true,
+          nestedItems: [
+            { title: t('nav.general_info', 'Общая информация'), link: '/education/faculties/master' },
+          ]
+        },
+        {
+          title: t('nav.doctorate_program', 'Аспирантура, Докторантура, PhD'),
+          hasNested: true,
+          nestedItems: [
+            { title: t('nav.general_info', 'Общая информация'), link: '/education/faculties/doctorate' },
+          ]
+        },
         {
           title: t('nav.college', 'Колледж'),
           hasNested: true,
@@ -146,8 +158,7 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
     sport: {
       title: t('nav.sport', 'Спорт'),
       submenu: [
-        { title: t('nav.sections', 'Секции'), link: '/sport/sections' },
-        { title: t('nav.infrastructure', 'Инфраструктура'), link: '/sport/infrastructure' },
+        { title: t('nav.graduates', 'Выпускники'), link: '/sport/graduates' },
         { title: t('nav.achievements', 'Спортивные достижения'), link: '/sport/achievements' },
       ]
     },
@@ -167,7 +178,7 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
       title: t('nav.admissions', 'Поступление'),
       submenu: [
         {
-          title: t('nav.bachelor', 'Бакалавриат'),
+          title: t('nav.applicant', 'Абитурент'),
           hasNested: true,
           nestedItems: [
             { title: t('nav.general_info', 'Общая информация'), link: '/admissions/bachelor/info' },
@@ -178,24 +189,17 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
           ]
         },
         {
-          title: t('nav.master_phd', 'Магистратура'),
+          title: t('nav.master_program', 'Магистратура'),
           hasNested: true,
           nestedItems: [
             { title: t('nav.general_info', 'Общая информация'), link: '/admissions/master/info' },
           ]
         },
         {
-          title: t('nav.doctorate', 'Докторантура'),
+          title: t('nav.doctorate_program', 'Аспирантура, Докторантура, PhD'),
           hasNested: true,
           nestedItems: [
             { title: t('nav.general_info', 'Общая информация'), link: '/admissions/doctorate/info' },
-          ]
-        },
-        {
-          title: t('nav.college', 'Колледж'),
-          hasNested: true,
-          nestedItems: [
-            { title: t('nav.general_info', 'Общая информация'), link: '/admissions/college/info' },
           ]
         },
       ]
@@ -230,9 +234,6 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
     contacts: {
       title: t('nav.contacts', 'Контакты'),
       submenu: [
-        // { title: t('nav.address_map', 'Адрес и карта'), link: '/contacts/address' },
-        // { title: t('nav.phones_email', 'Телефоны и email'), link: '/contacts/contact-info' },
-        // { title: t('nav.social_networks', 'Социальные сети'), link: '/contacts/social' },
         { title: t('nav.contacts', 'Контакты'), link: '/contacts' },
       ]
     }

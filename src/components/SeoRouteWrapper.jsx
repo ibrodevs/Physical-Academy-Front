@@ -45,8 +45,8 @@ const pathToPageKey = {
   '/education/faculties/correspondence': 'correspondence',
   '/education/departments': 'departments',
   '/education/college/sports': 'college_sports',
-  '/education/faculties/master': 'master_program',
-  '/education/faculties/doctorate': 'doctorate_program',
+  '/education/faculties/master': 'masterProgram',
+  '/education/faculties/doctorate': 'doctorateProgram',
 
   // Science routes
   '/science/publications': 'publications',

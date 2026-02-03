@@ -228,7 +228,7 @@ const QuotesBanner = () => {
       <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 via-emerald-400 to-cyan-400"></div>
 
       {/* CSS анимации */}
-      <style jsx>{`
+      <style>{`
         @keyframes progress {
           0% { transform: translateX(-100%); }
           100% { transform: translateX(100%); }

@@ -179,28 +179,15 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
       submenu: [
         {
           title: t('nav.applicant', 'Абитурент'),
-          hasNested: true,
-          nestedItems: [
-            { title: t('nav.general_info', 'Общая информация'), link: '/admissions/bachelor/info' },
-            { title: t('nav.registration', 'Регистрация'), link: '/admissions/bachelor/registration' },
-            { title: t('nav.international_applicants', 'Иностранные абитуриенты'), link: '/admissions/bachelor/international' },
-            { title: t('nav.quotas', 'Квоты'), link: '/admissions/bachelor/quotas' },
-            { title: t('nav.contacts', 'Контакты'), link: '/admissions/bachelor/contacts' },
-          ]
+          link: '/admissions/bachelor/info'
         },
         {
           title: t('nav.master_program', 'Магистратура'),
-          hasNested: true,
-          nestedItems: [
-            { title: t('nav.general_info', 'Общая информация'), link: '/admissions/master/info' },
-          ]
+          link: '/admissions/master/info'
         },
         {
           title: t('nav.doctorate_program', 'Аспирантура, Докторантура, PhD'),
-          hasNested: true,
-          nestedItems: [
-            { title: t('nav.general_info', 'Общая информация'), link: '/admissions/doctorate/info' },
-          ]
+          link: '/admissions/doctorate/info'
         },
       ]
     },

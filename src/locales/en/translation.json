@@ -795,6 +795,7 @@
     },
     "rules": {
       "title": "ADMISSION RULES",
+      "description": "To enroll in bachelor's program, you need to provide a complete set of documents, pass entrance exams and medical examination. Document acceptance is carried out within established deadlines. All applicants undergo testing on the basics of physical education and interview on the chosen sport.",
       "documents": {
         "title": "Required Documents",
         "item1": "Application for admission",
@@ -817,13 +818,29 @@
         "item2": "Testing on the basics of physical education",
         "item3": "Interview on the chosen sport",
         "item4": "Medical examination"
+      },
+      "pdf": {
+        "title": "Admission Rules in PDF",
+        "link": "/documents/bachelor-admission-rules.pdf",
+        "downloadText": "DOWNLOAD ADMISSION RULES (PDF)"
       }
     },
     "applyButton": "SUBMIT APPLICATION ONLINE",
     "contacts": {
       "title": "Contact Information and Working Hours",
+      "reception": "Reception",
+      "commission": "Admission Commission",
+      "email": "Email",
+      "schedule": "Working Hours",
+      "socialMedia": "Social Media",
       "addressTitle": "Address",
-      "address": "Akhunbaeva St, 97 Main Building",
+      "address": "I.Akhunbaeva 97 Main Building",
+      "phone": "+996 312 57 04 89",
+      "commissionPhone": "+996 707 09 09 52",
+      "commissionName": "Khalialdaeva Ainura Samatovna",
+      "emailAddress": "admission@kgafkis.kg",
+      "workingHoursWeekdays": "Monday-Friday: 8:00 - 17:00, lunch 12:00 - 13:00",
+      "workingHoursWeekend": "Saturday and Sunday: closed",
       "phoneTitle": "Admissions",
       "commissionTitle": "Admission Commission",
       "scheduleTitle": "Working Hours",
@@ -981,7 +998,26 @@
       "registration": "Admission",
       "international": "International",
       "quotas": "Quotas",
-      "contacts": "Contacts"
+      "contacts": "Contacts",
+      "faculties": "FACULTIES",
+      "rules": "ADMISSION RULES",
+      "contacts_schedule": "CONTACTS AND WORKING HOURS"
+    },
+    "loading": {
+      "faculties": "Loading data...",
+      "rules": "Loading admission rules...",
+      "error": "Error loading data:"
+    },
+    "errors": {
+      "facultiesNotFound": "Faculty data not found"
+    },
+    "contacts": {
+      "reception": "Reception",
+      "commission": "Admission Commission",
+      "email": "Email",
+      "schedule": "Working Hours",
+      "socialMedia": "Social Media",
+      "addressTitle": "Address"
     },
     "cta": {
       "applyNow": "Apply Now"
@@ -1970,6 +2006,44 @@
       "emailPlaceholder": "your.email@example.com",
       "selectProgram": "Select Program",
       "submit": "Submit Request"
+    },
+    "masterPage": {
+      "title": "Master's Program",
+      "subtitle": "Continue your education and become an expert in physical culture and sports",
+      "tabs": {
+        "applicantInfo": "Information for Applicants",
+        "contactsAdress": "Contacts and Address"
+      },
+      "address": {
+        "title": "Address",
+        "text": "I. Akhumbayev 97 Main Building"
+      },
+      "contacts": {
+        "reception": {
+          "title": "Reception",
+          "phone": "+996 312 57 04 89"
+        },
+        "commission": {
+          "title": "Admission Commission",
+          "phone": "+996 707 09 09 52",
+          "name": "Khalialdaeva Ainura Samatovna"
+        }
+      },
+      "schedule": {
+        "title": "Working Hours",
+        "weekdays": "Mon-Fri:",
+        "weekdaysHours": "8:00 - 17:00",
+        "lunch": "Lunch:",
+        "lunchHours": "12:00 - 13:00",
+        "weekend": "Sat-Sun:",
+        "weekendHours": "Weekend"
+      },
+      "social": {
+        "instagram": "Instagram",
+        "instagramHandle": "@ksapcs.kg",
+        "facebook": "Facebook",
+        "facebookName": "B.T. Turusbekov Kyrgyz State Academy of Physical Culture and Sports"
+      }
     }
   },
   "events": {
@@ -8791,6 +8865,7 @@
   },
   "studentCouncil": {
     "title": "Student Council",
+    "description": "The student council represents student interests, organizes events, and promotes student life development at the academy.",
     "subtitle": "Empowering student voices, driving campus change, and building community together",
     "membersTitle": "Council Members",
     "initiativesTitle": "Our Initiatives",
@@ -9224,7 +9299,13 @@
       "philosophy": "Philosophy and Humanities Department (PHD)",
       "fundamental": "Fundamental and Natural Sciences Department (FNSD)",
       "theory": "Theory, Methodology and Physical Culture and Sports Department (TMPCSD)",
-      "pedagogy": "Pedagogy, Psychology and Physical Culture History Department (PPPHCD)"
+      "pedagogy": "Pedagogy, Psychology and Physical Culture History Department (PPPHCD)",
+      "general_info": "General Information",
+      "mission_strategy": "Mission and Strategy",
+      "leadership": "Leadership",
+      "teachers": "Teachers",
+      "specializations": "Specializations",
+      "photo_gallery": "Photo Gallery"
     },
     "content": {
       "about": "About Department",
@@ -9504,13 +9585,54 @@
     "goToPlan": "Go to Curriculum",
     "goDisciplines": "Go to Disciplines"
   },
-  "bachelor": {
-    "socialNetworks": {
-      "title": "FOLLOW US",
-      "subtitle": "Subscribe to our social media for the latest news and updates"
-    },
-    "contacts": {
-      "socialTitle": "Social Networks"
+  "master": {
+    "title": "Master's Programs",
+    "description": "Master's  programs provide an opportunity for in-depth study in the field of physical culture and sports, training of scientific personnel and development of research skills",
+
+    "program_name": "Program",
+    "info_title": "Information",
+    "no_info": "Information not available",
+    "study_plan": "CURRICULUM",
+    "study_plan_desc": "Link to curriculum",
+    "go_to_plan": "Go to curriculum",
+    "no_plan": "Curriculum not available",
+    "disciplines": "DISCIPLINES",
+    "disciplines_desc": "List of disciplines",
+    "go_to_disciplines": "Go to disciplines",
+    "no_disciplines": "Disciplines not available",
+    "staff": "STAFF",
+    "info_button": "INFORMATION",
+    "plan_button": "CURRICULUM",
+    "disciplines_button": "DISCIPLINES",
+    "staff_button": "STAFF",
+    "back_to_list": "Back to staff list"
+  },
+  "phd": {
+    "title": "Postgraduate / Doctoral / PhD",
+    "subtitle": "Programs for training highly qualified scientific personnel",
+    "program_name": "Program",
+    "info_title": "Information",
+    "no_info": "Information not available",
+    "study_plan": "CURRICULUM",
+    "study_plan_desc": "Link to curriculum",
+    "go_to_plan": "Go to curriculum",
+    "no_plan": "Curriculum not available",
+    "disciplines": "DISCIPLINES",
+    "disciplines_desc": "List of disciplines",
+    "go_to_disciplines": "Go to disciplines",
+    "no_disciplines": "Disciplines not available",
+    "staff": "STAFF",
+    "info_button": "INFORMATION",
+    "plan_button": "CURRICULUM",
+    "disciplines_button": "DISCIPLINES",
+    "staff_button": "STAFF",
+    "back_to_list": "Back to staff list"
+  },
+  "students": {
+    "disabilities": {
+      "title": "Students with Disabilities",
+      "subtitle": "We strive to create an inclusive environment for all students, providing the necessary support and resources for successful learning.",
+      "description": "At KSAPC, we pay special attention to supporting students with disabilities. Our academy provides various forms of educational process adaptation, including individual curricula, technical rehabilitation means, specialized equipment, and consultation assistance from specialists."
     }
   }
 }

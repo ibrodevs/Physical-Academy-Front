@@ -960,6 +960,29 @@ class ApiService {
     }
   }
 
+  // Education API methods
+  async getMasterPrograms(language = "ru") {
+    const langParam = this.getLanguageParam(language);
+    try {
+      const data = await this.request(`/education/master/?lang=${langParam}`);
+      return data.results || [];
+    } catch (error) {
+      console.error("Error fetching master programs:", error);
+      throw error;
+    }
+  }
+
+  async getPhdPrograms(language = "ru") {
+    const langParam = this.getLanguageParam(language);
+    try {
+      const data = await this.request(`/education/phd/?lang=${langParam}`);
+      return data.results || [];
+    } catch (error) {
+      console.error("Error fetching phd programs:", error);
+      throw error;
+    }
+  }
+
   // Search student clubs
   async searchStudentClubs(query, language = "ru", category = null) {
     const langParam = this.getLanguageParam(language);
@@ -1095,6 +1118,9 @@ export const getVisaSupportServices =
   apiService.getVisaSupportServices.bind(apiService);
 export const getVisaSupportContacts =
   apiService.getVisaSupportContacts.bind(apiService);
+// Education API exports
+export const getMasterPrograms = apiService.getMasterPrograms.bind(apiService);
+export const getPhdPrograms = apiService.getPhdPrograms.bind(apiService);
 // Contact Info API exports
 export const getContactInfoPageData =
   apiService.getContactInfoPageData.bind(apiService);

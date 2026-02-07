@@ -82,26 +82,26 @@ const Contacts = () => {
     }))
   : [];
 
-  const contactInfo = [
+  const contactInfo = contacts?.contactInfo ? [
     {
       icon: <PhoneIcon />,
-      title: contacts.contactInfo.phone.title,
-      value: contacts.contactInfo.phone.value,
-      link: `tel:${contacts.contactInfo.phone.value}`
+      title: contacts.contactInfo.phone?.title || 'Phone',
+      value: contacts.contactInfo.phone?.value || '+996 (312) 57 04 89',
+      link: `tel:${contacts.contactInfo.phone?.value || '+996312570489'}`
     },
     {
       icon: <MailIcon />,
-      title: contacts.contactInfo.email.title,
-      value: contacts.contactInfo.email.value,
-      link: `mailto:${contacts.contactInfo.email.value}`
+      title: contacts.contactInfo.email?.title || 'Email',
+      value: contacts.contactInfo.email?.value || 'sport_akadem@mail.ru',
+      link: `mailto:${contacts.contactInfo.email?.value || 'sport_akadem@mail.ru'}`
     },
     {
       icon: <LocationIcon />,
-      title: contacts.contactInfo.location.title,
-      value: contacts.contactInfo.location.value,
-      link: contacts.contactInfo.location.link
+      title: contacts.contactInfo.location?.title || 'Address',
+      value: contacts.contactInfo.location?.value || 'Bishkek, Akhunbaeva 97',
+      link: contacts.contactInfo.location?.link || '#'
     }
-  ];
+  ] : [];
 
   // Функция для нормализации URL
   const normalizeUrl = (url) => {
@@ -137,10 +137,10 @@ const Contacts = () => {
               className="lg:col-span-1"
             >
               <h3 className="text-2xl font-bold text-white mb-4">
-                {contacts.title}
+                {contacts?.title || 'Contacts'}
               </h3>
               <p className="text-white/90 text-sm leading-relaxed mb-6">
-                {contacts.subtitle}
+                {contacts?.subtitle || 'Contact us for more information'}
               </p>
               
               {/* Социальные сети */}
@@ -169,7 +169,7 @@ const Contacts = () => {
               className="lg:col-span-1"
             >
               <h4 className="text-lg font-semibold text-white mb-6">
-                {contacts.quickContact.title}
+                {contacts?.quickContact?.title || 'Quick Contact'}
               </h4>
               <div className="space-y-4">
                 {contactInfo.map((contact, index) => (
@@ -199,10 +199,10 @@ const Contacts = () => {
               className="lg:col-span-1"
             >
               <h4 className="text-lg font-semibold text-white mb-6">
-                {contacts.links.title}
+                {contacts?.links?.title || 'Quick Links'}
               </h4>
               <div className="space-y-3">
-                {contacts.links.items.map((link, index) => (
+                {(contacts?.links?.items || []).map((link, index) => (
                   <motion.a
                     key={index}
                     href={normalizeUrl(link.url)}
@@ -223,21 +223,21 @@ const Contacts = () => {
               className="lg:col-span-1"
             >
               <h4 className="text-lg font-semibold text-white mb-6">
-                {contacts.hours.title}
+                {contacts?.hours?.title || 'Working Hours'}
               </h4>
               <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-white/90">{contacts.hours.weekdays}</span>
-                    <span className="text-white font-medium">{contacts.hours.weekdaysTime}</span>
+                    <span className="text-white/90">{contacts?.hours?.weekdays || 'Mon-Fri'}</span>
+                    <span className="text-white font-medium">{contacts?.hours?.weekdaysTime || '8:00 - 17:00'}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-white/90">{contacts.hours.saturday}</span>
-                    <span className="text-white font-medium">{contacts.hours.saturdayTime}</span>
+                    <span className="text-white/90">{contacts?.hours?.saturday || 'Saturday'}</span>
+                    <span className="text-white font-medium">{contacts?.hours?.saturdayTime || '10:00 - 16:00'}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-white/90">{contacts.hours.sunday}</span>
-                    <span className="text-red-200 font-medium">{contacts.hours.closed}</span>
+                    <span className="text-white/90">{contacts?.hours?.sunday || 'Sunday'}</span>
+                    <span className="text-red-200 font-medium">{contacts?.hours?.closed || 'Closed'}</span>
                   </div>
                 </div>
               </div>
@@ -252,14 +252,14 @@ const Contacts = () => {
             className="border-t border-white/20 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center"
           >
             <p className="text-white/80 text-sm text-center md:text-left mb-4 md:mb-0">
-              {contacts.footer.copyright}
+              {contacts?.footer?.copyright || '© 2025 KSAPCS. All rights reserved.'}
             </p>
             <div className="flex space-x-6 text-sm">
-              <a href={normalizeUrl(contacts.footer.privacy.url)} className="text-white/80 hover:text-white transition-colors duration-300">
-                {contacts.footer.privacy.name}
+              <a href={normalizeUrl(contacts?.footer?.privacy?.url || 'privacy')} className="text-white/80 hover:text-white transition-colors duration-300">
+                {contacts?.footer?.privacy?.name || 'Privacy Policy'}
               </a>
-              <a href={normalizeUrl(contacts.footer.terms.url)} className="text-white/80 hover:text-white transition-colors duration-300">
-                {contacts.footer.terms.name}
+              <a href={normalizeUrl(contacts?.footer?.terms?.url || 'terms')} className="text-white/80 hover:text-white transition-colors duration-300">
+                {contacts?.footer?.terms?.name || 'Terms of Use'}
               </a>
             </div>
           </motion.div>

@@ -3,9 +3,33 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const BachelorInfo = () => {
-  const { t } = useTranslation();
-  const [selectedFaculty, setSelectedFaculty] = useState(0);
-  const [selectedSport, setSelectedSport] = useState(0);
+  const { t, i18n } = useTranslation();
+  const [activeTab, setActiveTab] = useState('faculties');
+  const [apiData, setApiData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Загрузка данных из API
+  useEffect(() => {
+    setLoading(true); // Сбрасываем loading при смене языка
+    const fetchBachelorData = async () => {
+      try {
+        const response = await fetch(`https://physical-academy-backend-3dccb860f75a.herokuapp.com/api/admission/bachelor-programs/?lang=${i18n.language}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch data');
+        }
+        const data = await response.json();
+        setApiData(data.results[0]); // Берем первый элемент из results
+      } catch (err) {
+        setError(err.message);
+        console.error('Error fetching bachelor data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBachelorData();
+  }, [i18n.language]); // Добавляем зависимость от языка
   
   // Данные факультетов
   const faculties = [
@@ -51,62 +75,31 @@ const BachelorInfo = () => {
   ];
 
   // Данные правил приема
-  const admissionRules = [
-    {
-      id: 1,
-      title: t('bachelor.rules.documents.title', 'Необходимые документы'),
-      icon: '📄',
-      color: 'from-blue-500 to-blue-600',
-      items: [
-        t('bachelor.rules.documents.item1', 'Заявление на поступление'),
-        t('bachelor.rules.documents.item2', 'Аттестат о среднем образовании (оригинал)'),
-        t('bachelor.rules.documents.item3', 'Паспорт (копия)'),
-        t('bachelor.rules.documents.item4', 'Медицинская справка формы 086/у'),
-        t('bachelor.rules.documents.item5', '6 фотографии 3x4 см'),
-        t('bachelor.rules.documents.item6', 'Сертификат ЕГЭ/ОРТ (при наличии)'),
-      ]
-    },
-    {
-      id: 2,
-      title: t('bachelor.rules.dates.title', 'Сроки подачи документов'),
-      icon: '📅',
-      color: 'from-green-500 to-green-600',
-      items: [
-        t('bachelor.rules.dates.item1', 'Начало приема документов: 20 июня'),
-        t('bachelor.rules.dates.item2', 'Окончание приема документов: 25 августа'),
-        t('bachelor.rules.dates.item3', 'Вступительные испытания: 26-30 августа'),
-        t('bachelor.rules.dates.item4', 'Объявление результатов: 1 сентября'),
-      ]
-    },
-    {
-      id: 3,
-      title: t('bachelor.rules.exams.title', 'Вступительные испытания'),
-      icon: '📝',
-      color: 'from-purple-500 to-purple-600',
-      items: [
-        t('bachelor.rules.exams.item1', 'Общая физическая подготовка'),
-        t('bachelor.rules.exams.item2', 'Тестирование по основам физической культуры'),
-        t('bachelor.rules.exams.item3', 'Собеседование по выбранному виду спорта'),
-        t('bachelor.rules.exams.item4', 'Медицинский осмотр'),
-      ]
+  const admissionRules = {
+    description: t('bachelor.rules.description', 'Для поступления в бакалавриат необходимо предоставить полный пакет документов, пройти вступительные испытания и медицинский осмотр. Прием документов осуществляется в установленные сроки. Все абитуриенты проходят тестирование по основам физической культуры и собеседование по выбранному виду спорта.'),
+    pdf: {
+      title: t('bachelor.rules.pdf.title', 'Правила приема в PDF'),
+      link: t('bachelor.rules.pdf.link', '/documents/bachelor-admission-rules.pdf')
     }
-  ];
+  };
 
-  // Контактная информация
-  const contactInfo = {
-    title: t('bachelor.contacts.title', 'Контакты и график работы'),
-    address: t('bachelor.contacts.address', 'И.Ахунбаева 97 Главный корпус'),
-    phone: '+996 312 57 04 89',
+  // Контакты и график работы
+  const contactsSchedule = {
+    phone: t('bachelor.contacts.phone', '+996 312 57 04 89'),
     admissionCommission: {
-      phone: '+996 707 09 09 52',
-      name: 'Халиалдаева Айнура Саматовна'
+      phone: t('bachelor.contacts.commissionPhone', '+996 707 09 09 52'),
+      name: t('bachelor.contacts.commissionName', 'Халиалдаева Айнура Саматовна')
     },
-    email: 'admission@kgafkis.kg',
-    schedule: [
-      t('bachelor.contacts.weekdays', 'Пн-Пт: 8:00 - 17:00, обед 12:00 - 13:00'),
-      t('bachelor.contacts.saturday', 'Сб: выходной'),
-      t('bachelor.contacts.sunday', 'Вс: выходной'),
-    ]
+    email: t('bachelor.contacts.emailAddress', 'admission@kgafkis.kg'),
+    address: t('bachelor.contacts.address', 'И.Ахунбаева 97 Главный корпус'),
+    workingHours: {
+      weekdays: t('bachelor.contacts.workingHoursWeekdays', 'Понедельник-пятница: 8:00 - 17:00, обед 12:00 - 13:00'),
+      weekend: t('bachelor.contacts.workingHoursWeekend', 'Суббота и воскресенье: выходные')
+    },
+    socialMedia: {
+      instagram: 'https://www.instagram.com/ksapcs.kg?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==',
+      facebook: 'https://www.facebook.com/people/%D0%91%D0%A2%D0%A2%D1%83%D1%80%D1%83%D1%81%D0%B1%D0%B5%D0%BA%D0%BE%D0%B2-%D0%B0%D1%82%D1%8B%D0%BD%D0%B4%D0%B0%D0%B3%D1%8B-%D0%9A%D0%9C%D0%94%D0%A2%D0%B6%D0%A1%D0%90/61585145273355/?ref=pl_edit_xav_ig_profile_page_web#'
+    }
   };
 
   return (
@@ -123,82 +116,87 @@ const BachelorInfo = () => {
           </p>
         </div>
 
-        {/* Основная сетка: 3 колонки */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Табы */}
+        <div className="flex justify-center mb-12">
+          <div className="bg-white rounded-xl shadow-xl p-2 border-2 border-blue-100">
+            <div className="flex flex-wrap justify-center gap-2">
+              <button
+                onClick={() => setActiveTab('faculties')}
+                className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
+                  activeTab === 'faculties'
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg'
+                    : 'text-blue-700 hover:bg-blue-50 hover:shadow-md'
+                }`}
+              >
+                {t('bachelor.tabs.faculties', 'ФАКУЛЬТЕТЫ')}
+              </button>
+              <button
+                onClick={() => setActiveTab('rules')}
+                className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
+                  activeTab === 'rules'
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg'
+                    : 'text-blue-700 hover:bg-blue-50 hover:shadow-md'
+                }`}
+              >
+                {t('bachelor.tabs.rules', 'ПРАВИЛА ПРИЕМА')}
+              </button>
+              <button
+                onClick={() => setActiveTab('contacts_schedule')}
+                className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
+                  activeTab === 'contacts_schedule'
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg'
+                    : 'text-blue-700 hover:bg-blue-50 hover:shadow-md'
+                }`}
+              >
+                {t('bachelor.tabs.contacts_schedule', 'КОНТАКТЫ И ГРАФИК РАБОТЫ')}
+              </button>
+            </div>
+          </div>
+        </div>
           
-          {/* Левая колонка: Факультеты */}
-          <div className="lg:col-span-1">
+          {/* Контент табов */}
+          {activeTab === 'faculties' && (
             <div className="bg-white rounded-2xl shadow-xl p-6 border-2 border-blue-100 hover:border-blue-300 transition-all duration-300">
               <h2 className="text-2xl font-bold text-blue-900 mb-6 pb-4 border-b border-blue-100">
                 <span className="flex items-center">
-                  <span className="text-3xl mr-3">🎓</span>
+                  <span className="text-3xl mr-3">🏃‍♂️</span>
                   {t('bachelor.faculties.title', 'ФАКУЛЬТЕТЫ')}
                 </span>
               </h2>
               
-              <div className="space-y-4 mb-8">
-                {faculties.map((faculty, index) => (
-                  <button
-                    key={faculty.id}
-                    onClick={() => setSelectedFaculty(index)}
-                    className={`w-full text-left p-5 rounded-xl transition-all duration-300 group ${
-                      selectedFaculty === index
-                        ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg border-2 border-blue-400'
-                        : 'bg-blue-50 text-blue-800 hover:bg-blue-100 hover:shadow-md border-2 border-blue-200 hover:border-blue-300'
-                    }`}
-                  >
-                    <div className="flex items-center">
-                      <span className="text-2xl mr-3">{faculty.icon}</span>
-                      <div className="flex-1">
-                        <div className="font-bold text-lg">{faculty.name}</div>
-                        {selectedFaculty === index && (
-                          <div className="mt-2 text-blue-100 text-sm">
-                            {faculty.description}
-                          </div>
-                        )}
-                      </div>
-                      {selectedFaculty === index && (
-                        <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center animate-pulse">
-                          <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                        </div>
-                      )}
+              <div className="space-y-8">
+                {loading ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+                    <p className="text-gray-600 mt-4">{t('bachelor.loading.faculties', 'Загрузка данных...')}</p>
+                  </div>
+                ) : error ? (
+                  <div className="text-center py-8">
+                    <p className="text-red-600">{t('bachelor.loading.error', 'Ошибка загрузки данных:')} {error}</p>
+                  </div>
+                ) : apiData?.faculties ? (
+                  apiData.faculties.map((faculty, index) => (
+                    <div key={faculty.id} className="border-2 border-blue-200 rounded-xl p-6 hover:border-blue-400 transition-all duration-300">
+                      <h3 className="text-xl font-bold text-blue-900 mb-4 flex items-center">
+                        <span className="text-2xl mr-3">🏃‍♂️</span>
+                        {faculty.name}
+                      </h3>
+                      <p className="text-gray-700 leading-relaxed">
+                        {faculty.sports}
+                      </p>
                     </div>
-                  </button>
-                ))}
-              </div>
-
-              {/* Виды спорта выбранного факультета */}
-              <div className="mt-8 pt-6 border-t border-blue-100">
-                <h3 className="text-xl font-bold text-blue-900 mb-4 flex items-center">
-                  <span className="text-2xl mr-2">⚽</span>
-                  {t('bachelor.sports.title', 'ВИДЫ СПОРТА')}
-                </h3>
-                <div className="grid grid-cols-2 gap-3">
-                  {faculties[selectedFaculty]?.sports.map((sport) => (
-                    <div
-                      key={sport.id}
-                      className={`p-3 rounded-lg text-center transition-all duration-300 cursor-pointer border-2 ${
-                        selectedSport === sport.id
-                          ? 'bg-gradient-to-r from-green-500 to-green-600 text-white border-green-400 shadow-md'
-                          : 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100 hover:border-green-300'
-                      }`}
-                      onClick={() => setSelectedSport(sport.id)}
-                    >
-                      <div className="font-medium text-sm">
-                        {sport.name}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-gray-600">{t('bachelor.errors.facultiesNotFound', 'Данные о факультетах не найдены')}</p>
+                  </div>
+                )}
               </div>
             </div>
-          </div>
+          )}
 
-          {/* Центральная колонка: Правила приема */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-xl p-6 border-2 border-blue-100 hover:border-blue-300 transition-all duration-300 h-full">
+          {activeTab === 'rules' && (
+            <div className="bg-white rounded-2xl shadow-xl p-6 border-2 border-blue-100 hover:border-blue-300 transition-all duration-300">
               <h2 className="text-2xl font-bold text-blue-900 mb-6 pb-4 border-b border-blue-100">
                 <span className="flex items-center">
                   <span className="text-3xl mr-3">📋</span>
@@ -206,56 +204,64 @@ const BachelorInfo = () => {
                 </span>
               </h2>
               
-              <div className="space-y-6">
-                {admissionRules.map((rule) => (
-                  <div 
-                    key={rule.id} 
-                    className="p-5 rounded-xl border-2 border-blue-200 hover:border-blue-400 transition-all duration-300 group hover:shadow-lg"
-                  >
-                    <div className="flex items-center mb-4">
-                      <div className={`w-10 h-10 rounded-lg bg-gradient-to-r ${rule.color} flex items-center justify-center text-white text-xl shadow-md mr-4`}>
-                        {rule.icon}
-                      </div>
-                      <h3 className="text-lg font-bold text-blue-900">
-                        {rule.title}
-                      </h3>
-                    </div>
-                    
-                    <ul className="space-y-2">
-                      {rule.items.map((item, index) => (
-                        <li key={index} className="flex items-start group/item">
-                          <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-2 mr-3"></div>
-                          <span className="text-gray-700 text-sm group-hover/item:text-blue-800 transition-colors">
-                            {item}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
+              <div className="prose prose-lg max-w-none mb-8">
+                {loading ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+                    <p className="text-gray-600 mt-4">{t('bachelor.loading.rules', 'Загрузка правил приема...')}</p>
                   </div>
-                ))}
+                ) : error ? (
+                  <div className="text-center py-8">
+                    <p className="text-red-600">{t('bachelor.loading.error', 'Ошибка загрузки данных:')} {error}</p>
+                  </div>
+                ) : apiData?.ruling ? (
+                  <div dangerouslySetInnerHTML={{ __html: apiData.ruling }} />
+                ) : (
+                  <p className="text-gray-700 leading-relaxed">
+                    {admissionRules.description}
+                  </p>
+                )}
               </div>
 
-              {/* Кнопка подачи заявления */}
-              <div className="mt-8 pt-6 border-t border-blue-100">
-                <button className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-bold py-4 px-6 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 group">
-                  <div className="flex items-center justify-center space-x-3">
-                    <span className="text-lg">{t('bachelor.applyButton', 'ПОДАТЬ ЗАЯВЛЕНИЕ ОНЛАЙН')}</span>
-                    <svg className="w-5 h-5 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                  </div>
-                </button>
+              {/* PDF ссылка */}
+              <div className="pt-6 border-t border-blue-100">
+                <div className="flex items-center justify-center">
+                  {apiData?.pdf ? (
+                    <a
+                      href={apiData.pdf}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center px-6 py-3 bg-red-500 text-white font-bold rounded-lg hover:bg-red-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 group"
+                    >
+                      <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      {apiData.file_name || t('bachelor.rules.pdf.downloadText', 'СКАЧАТЬ ПРАВИЛА ПРИЕМА (PDF)')}
+                    </a>
+                  ) : (
+                    <a
+                      href={admissionRules.pdf.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center px-6 py-3 bg-red-500 text-white font-bold rounded-lg hover:bg-red-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 group"
+                    >
+                      <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      {admissionRules.pdf.title}
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
-          {/* Правая колонка: Контакты и график */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-xl p-6 border-2 border-blue-100 hover:border-blue-300 transition-all duration-300 h-full">
+          {activeTab === 'contacts_schedule' && (
+            <div className="bg-white rounded-2xl shadow-xl p-6 border-2 border-blue-100 hover:border-blue-300 transition-all duration-300">
               <h2 className="text-2xl font-bold text-blue-900 mb-6 pb-4 border-b border-blue-100">
                 <span className="flex items-center">
                   <span className="text-3xl mr-3">📞</span>
-                  {contactInfo.title.toUpperCase()}
+                  {t('bachelor.tabs.contacts_schedule', 'КОНТАКТЫ И ГРАФИК РАБОТЫ')}
                 </span>
               </h2>
               
@@ -270,7 +276,7 @@ const BachelorInfo = () => {
                   </div>
                   <div>
                     <h4 className="font-bold text-gray-800 text-lg mb-1">{t('bachelor.contacts.addressTitle', 'Адрес')}</h4>
-                    <p className="text-gray-600">{contactInfo.address}</p>
+                    <p className="text-gray-600">{contactsSchedule.address}</p>
                   </div>
                 </div>
 
@@ -283,15 +289,15 @@ const BachelorInfo = () => {
                       </svg>
                     </div>
                     <div>
-                      <h4 className="font-bold text-gray-800 text-lg mb-1">{t('bachelor.contacts.phoneTitle', 'Приемная')}</h4>
-                      <p className="text-gray-600">{contactInfo.phone}</p>
+                      <h4 className="font-bold text-gray-800 text-lg mb-1">{t('bachelor.contacts.reception', 'Приемная')}</h4>
+                      <p className="text-gray-600">{contactsSchedule.phone}</p>
                     </div>
                   </div>
 
                   <div className="ml-14 pl-4 border-l-2 border-green-300">
-                    <h4 className="font-bold text-green-700 text-base mb-1">{t('bachelor.contacts.commissionTitle', 'Приемная комиссия')}</h4>
-                    <p className="text-gray-600">{contactInfo.admissionCommission.phone}</p>
-                    <p className="text-gray-500 text-sm mt-1">{contactInfo.admissionCommission.name}</p>
+                    <h4 className="font-bold text-green-700 text-base mb-1">{t('bachelor.contacts.commission', 'Приемная комиссия')}</h4>
+                    <p className="text-gray-600">{contactsSchedule.admissionCommission.phone}</p>
+                    <p className="text-gray-500 text-sm mt-1">{contactsSchedule.admissionCommission.name}</p>
                   </div>
                 </div>
 
@@ -303,8 +309,8 @@ const BachelorInfo = () => {
                     </svg>
                   </div>
                   <div>
-                    <h4 className="font-bold text-gray-800 text-lg mb-1">Email</h4>
-                    <p className="text-gray-600">{contactInfo.email}</p>
+                    <h4 className="font-bold text-gray-800 text-lg mb-1">{t('bachelor.contacts.email', 'Email')}</h4>
+                    <p className="text-gray-600">{contactsSchedule.email}</p>
                   </div>
                 </div>
 
@@ -317,18 +323,22 @@ const BachelorInfo = () => {
                       </svg>
                     </div>
                     <h4 className="font-bold text-blue-900 text-lg">
-                      {t('bachelor.contacts.scheduleTitle', 'График работы')}
+                      {t('bachelor.contacts.schedule', 'График работы')}
                     </h4>
                   </div>
                   <ul className="space-y-2">
-                    {contactInfo.schedule.map((item, index) => (
-                      <li key={index} className="flex items-center text-gray-700 group/item">
-                        <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-3"></div>
-                        <span className="text-sm group-hover/item:text-blue-800 transition-colors">
-                          {item}
-                        </span>
-                      </li>
-                    ))}
+                    <li className="flex items-center text-gray-700 group/item">
+                      <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-3"></div>
+                      <span className="text-sm group-hover/item:text-blue-800 transition-colors">
+                        {contactsSchedule.workingHours.weekdays}
+                      </span>
+                    </li>
+                    <li className="flex items-center text-gray-700 group/item">
+                      <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-3"></div>
+                      <span className="text-sm group-hover/item:text-blue-800 transition-colors">
+                        {contactsSchedule.workingHours.weekend}
+                      </span>
+                    </li>
                   </ul>
                 </div>
 
@@ -336,26 +346,28 @@ const BachelorInfo = () => {
                 <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border-2 border-purple-200 group hover:border-purple-300 transition-all duration-300">
                   <div className="flex items-center mb-4">
                     <div className="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-400 rounded-lg flex items-center justify-center text-white mr-3">
-                      <span>📱</span>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                      </svg>
                     </div>
                     <h4 className="font-bold text-purple-900 text-lg">
-                      {t('bachelor.contacts.socialTitle', 'Социальные сети')}
+                      {t('bachelor.contacts.socialMedia', 'Социальные сети')}
                     </h4>
                   </div>
                   <div className="flex gap-3 justify-start">
                     <a 
-                      href="https://www.instagram.com/ksapcs.kg" 
+                      href={contactsSchedule.socialMedia.instagram}
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white shadow-md hover:shadow-lg transform hover:scale-110 transition-all duration-300"
                       title="Instagram"
                     >
                       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.015-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM5.838 12a6.162 6.162 0 1 1 12.324 0 6.162 6.162 0 0 1-12.324 0zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm4.965-10.322a1.44 1.44 0 1 1 2.881.001 1.44 1.44 0 0 1-2.881-.001z"/>
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.015-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zm0 10.162a3.999 3.999 0 110-7.998 3.999 3.999 0 010 7.998zm6.406-11.845a1.44 1.44 0 11-2.882 0 1.44 1.44 0 012.882 0z"/>
                       </svg>
                     </a>
                     <a 
-                      href="https://www.facebook.com/people/%D0%91%D0%A2%D0%A2%D1%83%D1%80%D1%83%D1%81%D0%B1%D0%B5%D0%BA%D0%BE%D0%B2-%D0%B0%D1%82%D1%8B%D0%BD%D0%B4%D0%B0%D0%B3%D1%8B-%D0%9A%D0%9C%D0%94%D0%A2%D0%B6%D0%A1%D0%90/61585145273355/" 
+                      href={contactsSchedule.socialMedia.facebook}
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center text-white shadow-md hover:shadow-lg transform hover:scale-110 transition-all duration-300"
@@ -369,58 +381,10 @@ const BachelorInfo = () => {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Нижняя секция с дополнительной информацией */}
-        <div className="mt-12 bg-white rounded-2xl shadow-xl p-8 border-2 border-blue-100 hover:border-blue-300 transition-all duration-300">
-          <h2 className="text-2xl font-bold text-blue-900 mb-8 text-center">
-            <span className="flex items-center justify-center">
-              <span className="text-3xl mr-3">ℹ️</span>
-              {t('bachelor.additionalInfo.title', 'ДОПОЛНИТЕЛЬНАЯ ИНФОРМАЦИЯ')}
-            </span>
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 rounded-xl border-2 border-blue-200 hover:border-blue-400 transition-all duration-300 group hover:shadow-lg">
-              <div className="w-14 h-14 bg-gradient-to-r from-blue-400 to-blue-500 rounded-lg flex items-center justify-center text-white text-2xl shadow-md mb-4 mx-auto group-hover:scale-110 transition-transform duration-300">
-                🎓
-              </div>
-              <h3 className="font-bold text-blue-900 text-xl mb-3 text-center">
-                {t('bachelor.additionalInfo.scholarship.title', 'СТИПЕНДИИ')}
-              </h3>
-              <p className="text-gray-600 text-center">
-                {t('bachelor.additionalInfo.scholarship.description', 'Для успевающих студентов предоставляются академические и социальные стипендии.')}
-              </p>
-            </div>
-            
-            <div className="p-6 rounded-xl border-2 border-green-200 hover:border-green-400 transition-all duration-300 group hover:shadow-lg">
-              <div className="w-14 h-14 bg-gradient-to-r from-green-400 to-green-500 rounded-lg flex items-center justify-center text-white text-2xl shadow-md mb-4 mx-auto group-hover:scale-110 transition-transform duration-300">
-                🏠
-              </div>
-              <h3 className="font-bold text-green-900 text-xl mb-3 text-center">
-                {t('bachelor.additionalInfo.hostel.title', 'ОБЩЕЖИТИЕ')}
-              </h3>
-              <p className="text-gray-600 text-center">
-                {t('bachelor.additionalInfo.hostel.description', 'Иногородним студентам предоставляется место в современном общежитии академии.')}
-              </p>
-            </div>
-            
-            <div className="p-6 rounded-xl border-2 border-purple-200 hover:border-purple-400 transition-all duration-300 group hover:shadow-lg">
-              <div className="w-14 h-14 bg-gradient-to-r from-purple-400 to-purple-500 rounded-lg flex items-center justify-center text-white text-2xl shadow-md mb-4 mx-auto group-hover:scale-110 transition-transform duration-300">
-                🌍
-              </div>
-              <h3 className="font-bold text-purple-900 text-xl mb-3 text-center">
-                {t('bachelor.additionalInfo.international.title', 'МЕЖДУНАРОДНЫЕ ПРОГРАММЫ')}
-              </h3>
-              <p className="text-gray-600 text-center">
-                {t('bachelor.additionalInfo.international.description', 'Программы обмена с ведущими спортивными вузами Европы и Азии.')}
-              </p>
-            </div>
-          </div>
+          )}
         </div>
       </div>
-    </div>
+
   );
 };
 

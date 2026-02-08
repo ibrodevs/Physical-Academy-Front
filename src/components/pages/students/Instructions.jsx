@@ -202,7 +202,11 @@ const Instructions = () => {
 
   const ErrorMessage = ({ onRetry }) => (
     <div className="text-center py-12">
-      <div className="text-red-400 text-6xl mb-4">⚠️</div>
+      <div className="text-red-400 mb-4 flex justify-center">
+        <svg className="w-16 h-16" fill="currentColor" viewBox="0 0 20 20">
+          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd"/>
+        </svg>
+      </div>
       <h3 className="text-2xl text-white mb-4">Error Loading Documents</h3>
       <p className="text-blue-200 mb-6">{backendData.error}</p>
       <button
@@ -226,10 +230,26 @@ const Instructions = () => {
         <div className="absolute top-1/3 right-20 w-48 h-48 bg-emerald-500/15 rounded-full blur-3xl animate-bounce delay-1000"></div>
         <div className="absolute bottom-32 left-1/4 w-56 h-56 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-500"></div>
 
-        <div className="absolute top-1/4 right-1/4 text-6xl opacity-5">📚</div>
-        <div className="absolute bottom-1/3 left-1/4 text-5xl opacity-5">📋</div>
-        <div className="absolute top-1/2 left-1/2 text-4xl opacity-5">🎓</div>
-        <div className="absolute top-1/3 left-1/3 text-5xl opacity-5">📄</div>
+        <div className="absolute top-1/4 right-1/4 text-6xl opacity-5">
+          <svg className="w-16 h-16" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2" fill="none"/>
+          </svg>
+        </div>
+        <div className="absolute bottom-1/3 left-1/4 text-5xl opacity-5">
+          <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"/>
+          </svg>
+        </div>
+        <div className="absolute top-1/2 left-1/2 text-4xl opacity-5">
+          <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clipRule="evenodd"/>
+          </svg>
+        </div>
+        <div className="absolute top-1/3 left-1/3 text-5xl opacity-5">
+          <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd"/>
+          </svg>
+        </div>
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
@@ -261,8 +281,10 @@ const Instructions = () => {
           >
             {backendData.documents.length === 0 ? (
               <div className="col-span-full text-center py-12">
-                <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center text-emerald-400 text-3xl mx-auto mb-4 backdrop-blur-sm">
-                  📚
+                <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
+                  <svg className="w-10 h-10 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2" fill="none"/>
+                  </svg>
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-2">
                   {staticTexts[currentLang]?.noDocuments || staticTexts.en.noDocuments}
@@ -279,77 +301,38 @@ const Instructions = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   whileHover={{ y: -5, scale: 1.02 }}
-                  className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/20 overflow-hidden hover:border-emerald-400/50 transition-all duration-300 group h-full flex flex-col shadow-lg hover:shadow-2xl hover:shadow-emerald-500/10"
+                  className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/20 overflow-hidden hover:border-emerald-400/50 transition-all duration-300 group shadow-lg hover:shadow-2xl hover:shadow-emerald-500/10"
                 >
-                  <div className="p-6 flex-1 flex flex-col">
-                    {/* Заголовок документа */}
-                    <div className="mb-4">
-                      <div className="flex items-center mb-3">
-                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500/20 to-emerald-500/20 rounded-xl flex items-center justify-center text-2xl text-emerald-400 mr-4 group-hover:scale-110 transition-transform duration-300">
-                          📄
-                        </div>
-                        <span className="inline-block px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-lg text-sm font-medium">
-                          {document.format}
-                        </span>
-                      </div>
+                  <div className="p-6 text-center">
+                    {/* Название документа */}
+                    <h3 className="text-xl font-bold text-white group-hover:text-emerald-300 transition-colors duration-300 mb-6">
+                      {document.name}
+                    </h3>
 
-                      <h3 className="text-xl font-bold text-white group-hover:text-emerald-300 transition-colors duration-300 mb-2 line-clamp-2">
-                        {document.name}
-                      </h3>
-
-                      <p className="text-blue-100 text-sm line-clamp-2 mb-3">
-                        {document.description}
-                      </p>
-                    </div>
-
-                    {/* Информация о документе */}
-                    <div className="mt-auto">
-                      <div className="flex items-center justify-between text-sm text-blue-300 mb-4">
-                        <div className="flex items-center space-x-4">
-                          <span className="flex items-center">
-                            <span className="mr-1">📖</span>
-                            {document.pages} {currentLang === 'ru' ? 'стр.' : currentLang === 'kg' ? 'бет' : 'pages'}
-                          </span>
-                          <span className="flex items-center">
-                            <span className="mr-1">⚖️</span>
-                            {document.size}
-                          </span>
-                        </div>
-                        <span className="text-emerald-300">
-                          v{document.version}
-                        </span>
-                      </div>
-
-                      {/* Кнопка скачивания */}
-                      <button
-                        onClick={() => handleDownload(document.id, document.name)}
-                        disabled={isDownloading === document.id}
-                        className="w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-emerald-500 text-white rounded-xl hover:from-blue-600 hover:to-emerald-600 transition-all duration-300 font-medium text-center flex items-center justify-center group/btn disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl hover:shadow-emerald-500/30"
-                      >
-                        {isDownloading === document.id ? (
-                          <>
-                            <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></span>
-                            {currentLang === 'ru' ? 'Загрузка...' :
-                              currentLang === 'kg' ? 'Жүктөлүүдө...' :
-                                'Downloading...'}
-                          </>
-                        ) : (
-                          <>
-                            <span className="mr-2 group-hover/btn:translate-x-1 transition-transform duration-300">⬇️</span>
-                            {currentLang === 'ru' ? 'Скачать PDF' :
-                              currentLang === 'kg' ? 'PDF жүктөө' :
-                                'Download PDF'}
-                          </>
-                        )}
-                      </button>
-
-                      {/* Дата обновления */}
-                      <div className="text-center mt-3 text-xs text-blue-400">
-                        {currentLang === 'ru' ? 'Обновлено' :
-                          currentLang === 'kg' ? 'Жаңыртылды' :
-                            'Updated'} {document.lastUpdated}
-                      </div>
-                    </div>
+                    {/* Кнопка скачивания */}
+                    <button
+                      onClick={() => handleDownload(document.id, document.name)}
+                      disabled={isDownloading === document.id}
+                      className="w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-emerald-500 text-white rounded-xl hover:from-blue-600 hover:to-emerald-600 transition-all duration-300 font-medium text-center flex items-center justify-center group/btn disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl hover:shadow-emerald-500/30"
+                    >
+                      {isDownloading === document.id ? (
+                        <>
+                          <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></span>
+                          {currentLang === 'ru' ? 'Загрузка...' :
+                            currentLang === 'kg' ? 'Жүктөлүүдө...' :
+                              'Downloading...'}
+                        </>
+                      ) : (
+                        <>
+                            <svg className="w-5 h-5 mr-2 group-hover/btn:translate-x-1 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd"/>
+                            </svg>
+                          {currentLang === 'ru' ? 'Скачать PDF' :
+                            currentLang === 'kg' ? 'PDF жүктөө' :
+                              'Download PDF'}
+                        </>
+                      )}
+                    </button>
                   </div>
                 </motion.div>
               ))

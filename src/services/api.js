@@ -1001,6 +1001,18 @@ class ApiService {
       throw error;
     }
   }
+
+  // Get student instructions
+  async getStudentInstructions(language = "ru") {
+    const langParam = this.getLanguageParam(language);
+    try {
+      const data = await this.request(`/students/instructions/?lang=${langParam}`);
+      return data.results || [];
+    } catch (error) {
+      console.error("Error fetching student instructions:", error);
+      throw error;
+    }
+  }
 }
 
 // Create and export a singleton instance
@@ -1136,3 +1148,7 @@ export const getSocialCommunities =
   apiService.getSocialCommunities.bind(apiService);
 export const getFeaturedSocialCommunities =
   apiService.getFeaturedSocialCommunities.bind(apiService);
+
+// Student Instructions API exports
+export const getStudentInstructions =
+  apiService.getStudentInstructions.bind(apiService);

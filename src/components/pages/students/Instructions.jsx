@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
+import { getStudentInstructions } from "../../../services/api";
 
 const Instructions = () => {
   const { t, i18n } = useTranslation();
@@ -40,116 +41,43 @@ const Instructions = () => {
   };
 
   useEffect(() => {
-    // Используем статичные данные
-    const currentLang = i18n.language || 'en';
-    const texts = staticTexts[currentLang] || staticTexts.en;
+    const fetchInstructions = async () => {
+      try {
+        setBackendData(prev => ({ ...prev, loading: true, error: null }));
+        const currentLang = i18n.language || 'en';
+        const instructions = await getStudentInstructions(currentLang);
 
-    const demoDocuments = [
-      {
-        id: 1,
-        name: currentLang === 'ru' ? "Учебный план 2025" :
-          currentLang === 'kg' ? "Окуу планы 2025" :
-            "Academic Curriculum 2025",
-        description: currentLang === 'ru' ? "Полный учебный план на 2025 учебный год" :
-          currentLang === 'kg' ? "2025 окуу жылынын толук окуу планы" :
-            "Complete academic curriculum for 2025 academic year",
-        format: "PDF",
-        size: "1.8 MB",
-        version: "2.0",
-        pages: 35,
-        downloads: 156,
-        downloadUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-        lastUpdated: "2025-01-15"
-      },
-      {
-        id: 2,
-        name: currentLang === 'ru' ? "Правила проведения экзаменов" :
-          currentLang === 'kg' ? "Эмтихан өткөрүү эрежелери" :
-            "Examination Rules and Regulations",
-        description: currentLang === 'ru' ? "Официальные правила и процедуры проведения экзаменов" :
-          currentLang === 'kg' ? "Эмтихан өткөрүүнүн расмий эрежелери жана процедуралары" :
-            "Official examination rules and procedures",
-        format: "PDF",
-        size: "0.9 MB",
-        version: "1.5",
-        pages: 18,
-        downloads: 234,
-        downloadUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-        lastUpdated: "2025-02-10"
-      },
-      {
-        id: 3,
-        name: currentLang === 'ru' ? "Расписание занятий" :
-          currentLang === 'kg' ? "Сабактардын графиги" :
-            "Class Schedule",
-        description: currentLang === 'ru' ? "Расписание занятий на весенний семестр 2025" :
-          currentLang === 'kg' ? "2025-жылдын жазгы семестри үчүн сабактардын графиги" :
-            "Class schedule for Spring semester 2025",
-        format: "PDF",
-        size: "1.2 MB",
-        version: "3.1",
-        pages: 12,
-        downloads: 189,
-        downloadUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-        lastUpdated: "2025-01-20"
-      },
-      {
-        id: 4,
-        name: currentLang === 'ru' ? "Требования к выпускной работе" :
-          currentLang === 'kg' ? "Бүтүрүү ишине талаптар" :
-            "Graduation Thesis Requirements",
-        description: currentLang === 'ru' ? "Структура и требования к выпускной квалификационной работе" :
-          currentLang === 'kg' ? "Бүтүрүү квалификациялык ишинин структурасы жана талаптары" :
-            "Structure and requirements for graduation thesis",
-        format: "PDF",
-        size: "2.1 MB",
-        version: "1.8",
-        pages: 28,
-        downloads: 145,
-        downloadUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-        lastUpdated: "2025-01-05"
-      },
-      {
-        id: 5,
-        name: currentLang === 'ru' ? "Академический календарь" :
-          currentLang === 'kg' ? "Академиялык календарь" :
-            "Academic Calendar",
-        description: currentLang === 'ru' ? "Важные даты и события академического года 2025-2026" :
-          currentLang === 'kg' ? "2025-2026 окуу жылынын маанилүү даталары жана окуялары" :
-            "Important dates and events for 2025-2026 academic year",
-        format: "PDF",
-        size: "0.7 MB",
-        version: "2.2",
-        pages: 8,
-        downloads: 278,
-        downloadUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-        lastUpdated: "2025-01-01"
-      },
-      {
-        id: 6,
-        name: currentLang === 'ru' ? "Руководство по написанию научных статей" :
-          currentLang === 'kg' ? "Илимий макалаларды жазган боюнча колдонмо" :
-            "Guide to Writing Research Papers",
-        description: currentLang === 'ru' ? "Методические указания по подготовке и оформлению научных статей" :
-          currentLang === 'kg' ? "Илимий макалаларды даярдоо жана көркөмдөө боюнча методикалык көрсөтмөлөр" :
-            "Methodological guidelines for preparing and formatting research papers",
-        format: "PDF",
-        size: "1.5 MB",
-        version: "1.3",
-        pages: 22,
-        downloads: 167,
-        downloadUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-        lastUpdated: "2025-01-25"
+        // Transform the data to match the expected format
+        const documents = instructions.map(item => ({
+          id: item.id,
+          name: item.file_name,
+          downloadUrl: item.pdf,
+          format: "PDF", // Assuming all are PDFs, but could be determined from URL
+        }));
+
+        const texts = staticTexts[currentLang] || staticTexts.en;
+
+        setBackendData({
+          title: texts.title,
+          subtitle: texts.subtitle,
+          documents: documents,
+          loading: false,
+          error: null
+        });
+      } catch (error) {
+        console.error("Error fetching instructions:", error);
+        const texts = staticTexts[i18n.language || 'en'] || staticTexts.en;
+        setBackendData({
+          title: texts.title,
+          subtitle: texts.subtitle,
+          documents: [],
+          loading: false,
+          error: error.message || "Failed to load instructions"
+        });
       }
-    ];
+    };
 
-    setBackendData({
-      title: texts.title,
-      subtitle: texts.subtitle,
-      documents: demoDocuments,
-      loading: false,
-      error: null
-    });
+    fetchInstructions();
   }, [i18n.language]);
 
   useEffect(() => {

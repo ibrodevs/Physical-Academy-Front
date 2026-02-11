@@ -60,28 +60,6 @@ const MainContacts = () => {
                currentLang === 'kg' ? 'Халиалдаева Айнура Саматовна' :
                   'Khalialdaeva Ainura Samatovna'
          },
-         {
-            // id: 3,
-            // type: 'email',
-            // title: currentLang === 'ru' ? 'Электронная почта' :
-            //    currentLang === 'kg' ? 'Электрондук почта' :
-            //       'Email',
-            // value: 'info@ala-too.edu.kg',
-            // description: currentLang === 'ru' ? 'Общие вопросы' :
-            //    currentLang === 'kg' ? 'Жалпы суроолор' :
-            //       'General inquiries'
-         },
-         {
-            // id: 4,
-            // type: 'website',
-            // title: currentLang === 'ru' ? 'Веб-сайт' :
-            //    currentLang === 'kg' ? 'Веб-сайт' :
-            //       'Website',
-            // value: 'www.ala-too.edu.kg',
-            // description: currentLang === 'ru' ? 'Официальный сайт университета' :
-            //    currentLang === 'kg' ? 'Университеттин расмий сайты' :
-            //       'Official university website'
-         }
       ],
       schedule: {
          title: currentLang === 'ru' ? 'График работы' :
@@ -114,13 +92,6 @@ const MainContacts = () => {
             icon: <Instagram size={20} />,
             url: 'https://www.instagram.com/ksapcs.kg?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==',
             color: 'bg-gradient-to-r from-purple-600 to-pink-600'
-         },
-         {
-            id: 3,
-            name: 'YouTube',
-            icon: <Youtube size={20} />,
-            url: '●	https://www.facebook.com/people/%D0%91%D0%A2%D0%A2%D1%83%D1%80%D1%83%D1%81%D0%B1%D0%B5%D0%BA%D0%BE%D0%B2-%D0%B0%D1%82%D1%8B%D0%BD%D0%B4%D0%B0%D0%B3%D1%8B-%D0%9A%D0%9C%D0%94%D0%A2%D0%B6%D0%A1%D0%90/61585145273355/?ref=pl_edit_xav_ig_profile_page_web#',
-            color: 'bg-red-600'
          }
       ]
    };
@@ -213,15 +184,15 @@ const MainContacts = () => {
                      {/* Карта Google Maps */}
                      <div className="mt-6 rounded-xl overflow-hidden border border-white/20">
                         <iframe
-                           title="Ala-Too University Location"
-                           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2924.083189418088!2d74.59021521542224!3d42.87180897915616!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x389ec9c5d7e5b7a7%3A0x8f2b4f5f5b5b5b5b!2sAla-Too%20International%20University!5e0!3m2!1sen!2skg!4v1647456000000!5m2!1sen!2skg"
-                           width="100%"
-                           height="250"
-                           style={{ border: 0 }}
-                           allowFullScreen=""
-                           loading="lazy"
-                           referrerPolicy="no-referrer-when-downgrade"
-                           className="rounded-lg"
+                        title="Иса Ахунбаева 97, Бишкек"
+                        src="https://www.google.com/maps?q=Иса+Ахунбаева+97,+Бишкек&output=embed"
+                        width="100%"
+                        height="250"
+                        style={{ border: 0 }}
+                        allowFullScreen
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                        className="rounded-lg"
                         ></iframe>
                      </div>
                   </motion.div>

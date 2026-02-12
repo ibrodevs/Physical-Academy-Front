@@ -1,231 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 const AchievementsSport = () => {
-  const { t, i18n } = useTranslation();
-  const [activeCategory, setActiveCategory] = useState("all");
-  const [selectedAchievement, setSelectedAchievement] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
-  const [apiData, setApiData] = useState({
-    achievements: [],
-    loading: false,
-    error: null,
-  });
   const sectionRef = useRef(null);
-  const modalRef = useRef(null);
 
-  // Загрузка данных с API
-  const fetchAchievementsData = async () => {
-    try {
-      setApiData((prev) => ({ ...prev, loading: true, error: null }));
-
-      // API endpoint для спортивных достижений
-      const API_URL = import.meta.env.VITE_API_URL || "";
-      const response = await fetch(
-        `${API_URL}/api/sports/achievements/?language=${i18n.language}`
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      // API возвращает пагинированный ответ с полем results
-      setApiData({
-        achievements: data.results || data, // Берем results или весь data если это массив
-        loading: false,
-        error: null,
-      });
-    } catch (error) {
-      console.error("Error fetching achievements data:", error);
-      setApiData((prev) => ({ ...prev, error: error.message, loading: false }));
-    }
-  };
-
-  useEffect(() => {
-    fetchAchievementsData();
-  }, [i18n.language]);
-
-  // Нормализация данных из API
-  const normalizeAchievements = (apiAchievements) => {
-    // Если API вернул данные, используем их
-    if (
-      apiAchievements &&
-      Array.isArray(apiAchievements) &&
-      apiAchievements.length > 0
-    ) {
-      return apiAchievements.map((ach) => ({
-        id: ach.id,
-        name: String(ach.name || ach.athlete_name || ach.title || ""),
-        sport: String(ach.sport || ach.sport_type || ""),
-        competition: String(ach.competition || ach.event || ""),
-        // Ensure result is a string to avoid .toLowerCase errors
-        result: String(ach.result || ach.place || ach.achievement || ""),
-        // Keep date as-is (ISO) but coerce to string or empty
-        date: ach.date || ach.event_date || "",
-        image: ach.image || ach.photo || "/api/placeholder/300/200",
-        description: String(ach.description || ""),
-        category: ach.category || "individual",
-        details: ach.details || {},
-      }));
-    }
-
-    // Fallback - пустой массив, если нет данных
-    return [];
-  };
-
-  // Получаем нормализованные данные
-  const achievementsData = {
-    all: normalizeAchievements(apiData.achievements),
-  };
-
-  // Категории с правильными данными — теперь загружаются с бэкенда (fallback на локальные)
-  const defaultCategoriesTemplate = [
-    {
-      id: "all",
-      labelKey: "achievementsSport.categories.all",
-      labelDefault: "Все достижения",
-      icon: "🏆",
-      color: "from-blue-500 to-emerald-500",
-    },
-    {
-      id: "individual",
-      labelKey: "achievementsSport.categories.individual",
-      labelDefault: "Индивидуальные",
-      icon: "🏅",
-      color: "from-blue-500 to-cyan-500",
-    },
-    {
-      id: "team",
-      labelKey: "achievementsSport.categories.team",
-      labelDefault: "Командные",
-      icon: "👥",
-      color: "from-green-500 to-emerald-500",
-    },
-    {
-      id: "international",
-      labelKey: "achievementsSport.categories.international",
-      labelDefault: "Международные",
-      icon: "🌍",
-      color: "from-purple-500 to-blue-500",
-    },
-    {
-      id: "olympic",
-      labelKey: "achievementsSport.categories.olympic",
-      labelDefault: "Олимпийские",
-      icon: "🥇",
-      color: "from-yellow-500 to-orange-500",
-    },
-  ];
-
-  const [categories, setCategories] = useState(() => {
-    // initial map with counts computed from current data
-    const countsMap = {};
-    achievementsData.all.forEach(
-      (a) => (countsMap[a.category] = (countsMap[a.category] || 0) + 1)
-    );
-    return defaultCategoriesTemplate.map((c) => ({
-      id: c.id,
-      label: t(c.labelKey, c.labelDefault),
-      icon: c.icon,
-      color: c.color,
-      count:
-        c.id === "all" ? achievementsData.all.length : countsMap[c.id] || 0,
-    }));
-  });
-  const [categoriesById, setCategoriesById] = useState({});
-
-  // Fetch categories metadata from backend and statistics for counts, then merge
-  const fetchCategoriesData = async () => {
-    try {
-      const API_URL = import.meta.env.VITE_API_URL || "";
-      // fetch both endpoints in parallel
-      const [catsRes, statsRes] = await Promise.all([
-        fetch(
-          `${API_URL}/api/sports/achievement-categories/?language=${i18n.language}`
-        ),
-        fetch(`${API_URL}/api/sports/statistics/?language=${i18n.language}`),
-      ]);
-
-      if (!catsRes.ok) throw new Error(`categories HTTP ${catsRes.status}`);
-      if (!statsRes.ok && statsRes.status !== 404)
-        throw new Error(`statistics HTTP ${statsRes.status}`);
-
-      const catsData = await catsRes.json();
-      const statsData = statsRes.ok ? await statsRes.json() : null;
-
-      const catsList = catsData.results || catsData || [];
-      const statsList = (statsData && statsData.achievements_by_category) || [];
-
-      // build counts map keyed by slug or id
-      const countsMap = {};
-      statsList.forEach((it) => {
-        const key =
-          it.category || it["category"] || String(it.id || it.key || "");
-        countsMap[key] = it.count || it.value || 0;
-      });
-
-      // build id->slug map for numeric category values returned in achievements
-      const idToSlug = {};
-      catsList.forEach((c) => {
-        if (c && typeof c.id !== "undefined") {
-          idToSlug[c.id] = c.slug || String(c.id);
-        }
-      });
-
-      // total count: prefer stats total if available
-      const total =
-        statsData && typeof statsData.total_achievements !== "undefined"
-          ? statsData.total_achievements
-          : achievementsData.all.length ||
-            Object.values(countsMap).reduce((s, v) => s + v, 0);
-
-      // map categories from backend and combine counts
-      const mapped = catsList.map((c) => ({
-        id: c.slug || String(c.id),
-        slug: c.slug || String(c.id),
-        numericId: c.id,
-        label: c.name || c.title || c.slug || String(c.id),
-        icon: c.icon || "🏅",
-        color: c.color || "from-blue-500 to-cyan-500",
-        count: countsMap[c.slug] || countsMap[c.id] || 0,
-      }));
-
-      // ensure 'all' at beginning
-      const allItem = {
-        id: "all",
-        slug: "all",
-        label: t("achievementsSport.categories.all", "Все достижения"),
-        icon: "🏆",
-        color: "from-blue-500 to-emerald-500",
-        count: total,
-      };
-      const final = [allItem, ...mapped];
-
-      setCategories(final);
-      setCategoriesById(idToSlug);
-    } catch (err) {
-      console.error("Error fetching achievement categories:", err);
-      // keep local categories (no-op)
-    }
-  };
-
-  useEffect(() => {
-    fetchCategoriesData();
-    // update when achievements data changes or language changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [i18n.language, apiData.achievements]);
+  const achievements = t('achievementsSport.list', { returnObjects: true });
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
-      },
+      ([entry]) => setIsVisible(entry.isIntersecting),
       { threshold: 0.1 }
     );
 
@@ -236,98 +22,27 @@ const AchievementsSport = () => {
     return () => observer.disconnect();
   }, []);
 
-  // Закрытие модального окна по клику вне его области
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (modalRef.current && !modalRef.current.contains(event.target)) {
-        closeModal();
-      }
-    };
-
-    if (isModalOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-      document.body.style.overflow = "hidden";
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.body.style.overflow = "unset";
-    };
-  }, [isModalOpen]);
-
-  const openModal = (achievement) => {
-    setSelectedAchievement(achievement);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedAchievement(null);
-  };
-
-  // Фильтрация достижений по выбранной категории
-  const filteredAchievements = achievementsData.all.filter((achievement) => {
-    if (activeCategory === "all") return true;
-    const achCat = achievement.category;
-    if (!achCat && achCat !== 0) return false;
-    // if category is already a slug string
-    if (typeof achCat === "string") return achCat === activeCategory;
-    // if category is numeric id, map via categoriesById
-    const num = Number(achCat);
-    if (!Number.isNaN(num)) {
-      const slug = categoriesById[num] || String(num);
-      return slug === activeCategory;
-    }
-    // fallback to string compare
-    return String(achCat) === activeCategory;
-  });
-
+  // Анимации для списка
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
-      },
-    },
+        staggerChildren: 0.1
+      }
+    }
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0, x: -50 },
     visible: {
       opacity: 1,
-      y: 0,
+      x: 0,
       transition: {
-        duration: 0.6,
-      },
-    },
-  };
-
-  const modalVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: { opacity: 1, scale: 1 },
-    exit: { opacity: 0, scale: 0.8 },
-  };
-
-  const getResultColor = (result) => {
-    const r = String(result || "").toLowerCase();
-    if (r.includes("1") || r.includes("золот") || r.includes("золото")) {
-      return "from-yellow-400 to-yellow-600";
+        duration: 0.5,
+        ease: "easeOut"
+      }
     }
-    if (r.includes("2") || r.includes("серебр")) {
-      return "from-gray-400 to-gray-600";
-    }
-    if (r.includes("3") || r.includes("бронз")) {
-      return "from-orange-400 to-orange-700";
-    }
-    return "from-blue-400 to-cyan-600";
-  };
-
-  const formatDate = (dateStr) => {
-    if (!dateStr) return "";
-    const d = new Date(dateStr);
-    if (Number.isNaN(d.getTime())) return "";
-    return d.toLocaleDateString("ru-RU");
   };
 
   return (
@@ -338,36 +53,30 @@ const AchievementsSport = () => {
       {/* Анимированный фон */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-10 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-1/3 right-20 w-48 h-48 bg-emerald-500/15 rounded-full blur-3xl animate-bounce delay-1000"></div>
-        <div className="absolute bottom-32 left-1/4 w-56 h-56 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+        <div className="absolute bottom-20 right-10 w-72 h-72 bg-emerald-500/15 rounded-full blur-3xl animate-bounce delay-1000"></div>
+        <div className="absolute top-1/3 left-1/4 w-56 h-56 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-500"></div>
 
         {/* Спортивные символы */}
-        <div className="absolute top-1/4 right-1/4 text-6xl opacity-5">🏆</div>
-        <div className="absolute bottom-1/3 left-1/4 text-5xl opacity-5">
-          🥇
-        </div>
-        <div className="absolute top-1/2 left-1/2 text-4xl opacity-5">🎯</div>
-        <div className="absolute bottom-1/4 right-1/3 text-5xl opacity-5">
-          🚀
-        </div>
+        <div className="absolute top-1/4 right-1/4 text-7xl opacity-5">🏆</div>
+        <div className="absolute bottom-1/3 left-1/4 text-7xl opacity-5">🥇</div>
+        <div className="absolute top-2/3 right-1/3 text-7xl opacity-5">🎯</div>
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
-        {/* Header */}
+        {/* Header - только заголовок и подзаголовок */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={isVisible ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
           className="text-center mb-16 lg:mb-20"
         >
-
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={isVisible ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
             className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight"
           >
-            {t("achievementsSport.title", "Наши достижения")}
+            {t('achievementsSport.title', 'Наши спортсмены')}
           </motion.h1>
 
           <motion.div
@@ -380,271 +89,96 @@ const AchievementsSport = () => {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={isVisible ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.5 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
             className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed"
           >
-            {t(
-              "achievementsSport.subtitle",
-              "Гордость КГАФКиС — это наши спортсмены, тренеры и выпускники, прославившие академию на национальном и международном уровне."
-            )}
+            {t('achievementsSport.subtitle', 'Гордость КГАФКиС — наши талантливые спортсмены и их достижения')}
           </motion.p>
         </motion.div>
 
-        {/* Category Navigation - Исправленный фильтр */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isVisible ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="bg-white/5 rounded-3xl backdrop-blur-lg border border-white/20 shadow-2xl p-6 mb-12"
-        >
-          <div className="flex overflow-x-auto scrollbar-hide space-x-4">
-            {categories.map((category) => (
-              <motion.button
-                key={category.id}
-                whileHover={{
-                  backgroundColor: "rgba(255, 255, 255, 0.1)",
-                  transition: { duration: 0.2 },
-                }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setActiveCategory(category.id)}
-                className={`flex items-center space-x-3 flex-shrink-0 px-6 py-4 font-bold text-lg transition-all duration-300 rounded-2xl ${
-                  activeCategory === category.id
-                    ? `bg-gradient-to-r ${category.color} text-white shadow-2xl`
-                    : "text-blue-100 hover:text-white"
-                }`}
-              >
-                <span className="text-2xl">{category.icon}</span>
-                <span className="text-base lg:text-lg">{category.label}</span>
-                <span
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    activeCategory === category.id
-                      ? "bg-white/20 text-white"
-                      : "bg-white/10 text-blue-200"
-                  }`}
-                >
-                  {category.count}
-                </span>
-              </motion.button>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Achievements Grid */}
+        {/* Список спортсменов */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate={isVisible ? "visible" : "hidden"}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"
+          className="max-w-5xl mx-auto"
         >
-          <AnimatePresence>
-            {filteredAchievements.map((achievement, index) => (
+          {/* Заголовок списка */}
+          <div className="bg-white/10 backdrop-blur-lg rounded-t-2xl border border-white/20 border-b-0 p-5">
+            <div className="grid grid-cols-12 gap-4 text-blue-200 font-semibold">
+              <div className="col-span-1 text-center">#</div>
+              <div className="col-span-5">{t('achievementsSport.table.name', 'ФИО спортсмена')}</div>
+              <div className="col-span-3">{t('achievementsSport.table.sport', 'Вид спорта')}</div>
+              <div className="col-span-3">{t('achievementsSport.table.achievement', 'Достижение')}</div>
+            </div>
+          </div>
+
+          {/* Контейнер списка */}
+          <div className="bg-white/5 backdrop-blur-lg rounded-b-2xl border border-white/20 overflow-hidden">
+            {Array.isArray(achievements) && achievements.map((athlete, index) => (
               <motion.div
-                key={achievement.id}
+                key={athlete.id || index}
                 variants={itemVariants}
-                layout
-                initial="hidden"
-                animate="visible"
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="bg-white/5 rounded-3xl backdrop-blur-sm border border-white/10 hover:border-emerald-400/30 transition-all duration-500 transform hover:-translate-y-2 group overflow-hidden cursor-pointer"
-                whileHover={{ scale: 1.02 }}
-                onClick={() => openModal(achievement)}
+                whileHover={{
+                  backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                  transition: { duration: 0.2 }
+                }}
+                className={`
+                  grid grid-cols-12 gap-4 p-5 items-center
+                  ${index !== achievements.length - 1 ? 'border-b border-white/10' : ''}
+                  transition-all duration-300
+                `}
               >
-                <div className="relative overflow-hidden">
-                  <img
-                    src={achievement.image}
-                    alt={achievement.name}
-                    className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute top-4 right-4">
-                    <div
-                      className={`px-4 py-2 rounded-2xl bg-gradient-to-r ${getResultColor(
-                        achievement.result
-                      )} text-white font-bold text-sm backdrop-blur-sm`}
-                    >
-                      {achievement.result}
-                    </div>
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-900/80 to-transparent p-6">
-                    <h3 className="text-xl font-bold text-white mb-2">
-                      {achievement.name}
-                    </h3>
-                    <p className="text-emerald-200 text-lg">
-                      {achievement.sport}
-                    </p>
+                {/* Номер */}
+                <div className="col-span-1">
+                  <span className="inline-flex items-center justify-center w-8 h-8 
+                                 bg-gradient-to-r from-blue-500 to-emerald-500 
+                                 rounded-lg text-white font-bold text-sm">
+                    {index + 1}
+                  </span>
+                </div>
+
+                {/* ФИО и описание */}
+                <div className="col-span-5">
+                  <div className="flex flex-col">
+                    <span className="text-white font-medium text-lg">
+                      {athlete.name}
+                    </span>
+                    <span className="text-blue-200/70 text-sm leading-relaxed">
+                      {athlete.description}
+                    </span>
                   </div>
                 </div>
 
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="text-blue-200 text-sm">
-                      {achievement.competition}
-                    </div>
-                    <div className="text-emerald-300 text-sm font-medium">
-                      {formatDate(achievement.date)}
-                    </div>
+                {/* Вид спорта */}
+                <div className="col-span-3">
+                  <div className="inline-flex items-center px-3 py-1.5 
+                                bg-blue-500/20 rounded-lg border border-blue-500/30">
+                    <span className="text-blue-300 text-sm mr-1">⚽</span>
+                    <span className="text-white text-sm font-medium">
+                      {athlete.sport}
+                    </span>
                   </div>
+                </div>
 
-                  <p className="text-blue-100 text-lg mb-6 leading-relaxed">
-                    {achievement.description}
-                  </p>
-
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="w-full py-3 bg-gradient-to-r from-blue-500 to-emerald-500 text-white font-bold rounded-2xl transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/25 text-center"
-                  >
-                    {t("achievementsSport.card.button", "Подробнее")}
-                  </motion.div>
+                {/* Достижение */}
+                <div className="col-span-3">
+                  {athlete.achievement && (
+                    <div className="inline-flex items-center px-3 py-1.5 
+                                  bg-gradient-to-r from-amber-500/20 to-orange-500/20 
+                                  rounded-lg border border-amber-500/30">
+                      <span className="text-amber-400 text-sm mr-1">🏆</span>
+                      <span className="text-amber-300 text-sm font-medium">
+                        {athlete.achievement}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             ))}
-          </AnimatePresence>
+          </div>
         </motion.div>
-
-        {/* Empty State */}
-        {filteredAchievements.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-16"
-          >
-            <div className="text-6xl mb-6">🏆</div>
-            <h3 className="text-2xl font-bold text-white mb-4">
-              {t("achievementsSport.empty.title", "Достижений пока нет")}
-            </h3>
-            <p className="text-blue-200 text-lg">
-              {t(
-                "achievementsSport.empty.subtitle",
-                "Скоро здесь появятся новые достижения наших спортсменов!"
-              )}
-            </p>
-          </motion.div>
-        )}
       </div>
-
-      {/* Modal */}
-      <AnimatePresence>
-        {isModalOpen && selectedAchievement && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          >
-            <motion.div
-              ref={modalRef}
-              variants={modalVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl border border-white/20 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-            >
-              <div className="relative">
-                <img
-                  src={selectedAchievement.image}
-                  alt={selectedAchievement.name}
-                  className="w-full h-64 object-cover"
-                />
-                <button
-                  onClick={closeModal}
-                  className="absolute top-4 right-4 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors duration-300"
-                >
-                  ✕
-                </button>
-                <div className="absolute top-4 left-4">
-                  <div
-                    className={`px-4 py-2 rounded-2xl bg-gradient-to-r ${getResultColor(
-                      selectedAchievement.result
-                    )} text-white font-bold backdrop-blur-sm`}
-                  >
-                    {selectedAchievement.result}
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-8">
-                <h2 className="text-3xl font-bold text-white mb-4">
-                  {selectedAchievement.name}
-                </h2>
-
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="bg-white/5 rounded-2xl p-4">
-                    <div className="text-emerald-300 text-sm mb-1">
-                      {t("achievementsSport.modal.sport", "Вид спорта")}
-                    </div>
-                    <div className="text-white font-semibold text-lg">
-                      {selectedAchievement.sport}
-                    </div>
-                  </div>
-                  <div className="bg-white/5 rounded-2xl p-4">
-                    <div className="text-emerald-300 text-sm mb-1">
-                      {t("achievementsSport.modal.date", "Дата")}
-                    </div>
-                    <div className="text-white font-semibold text-lg">
-                      {formatDate(selectedAchievement.date)}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-white/5 rounded-2xl p-6 mb-6">
-                  <h3 className="text-xl font-bold text-white mb-3 flex items-center">
-                    <span className="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center text-white text-sm mr-3">
-                      !
-                    </span>
-                    {t("achievementsSport.modal.competition", "Соревнование")}
-                  </h3>
-                  <p className="text-blue-100 text-lg">
-                    {selectedAchievement.competition}
-                  </p>
-                </div>
-
-                <div className="bg-white/5 rounded-2xl p-6 mb-6">
-                  <h3 className="text-xl font-bold text-white mb-3 flex items-center">
-                    <span className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm mr-3">
-                      📝
-                    </span>
-                    {t("achievementsSport.modal.description", "Описание")}
-                  </h3>
-                  <p className="text-blue-100 text-lg leading-relaxed">
-                    {selectedAchievement.description}
-                  </p>
-                </div>
-
-                {selectedAchievement.details && (
-                  <div className="bg-gradient-to-r from-blue-500/10 to-emerald-500/10 rounded-2xl p-6 border border-emerald-500/20">
-                    <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                      <span className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-sm mr-3">
-                        🔍
-                      </span>
-                      {t(
-                        "achievementsSport.modal.details",
-                        "Детали достижения"
-                      )}
-                    </h3>
-                    <div className="grid gap-3">
-                      {Object.entries(selectedAchievement.details).map(
-                        ([key, value]) => (
-                          <div
-                            key={key}
-                            className="flex justify-between items-center py-2 border-b border-white/10"
-                          >
-                            <span className="text-emerald-300 capitalize">
-                              {t(`achievementsSport.modal.${key}`, key)}
-                            </span>
-                            <span className="text-white font-semibold text-right">
-                              {value}
-                            </span>
-                          </div>
-                        )
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </section>
   );
 };

@@ -89,6 +89,7 @@ import SeoRouteWrapper from './components/SeoRouteWrapper';
 import SportSections from "./components/pages/sport/SectionSport";
 import SportInfrastructure from "./components/pages/sport/InfractructureSport";
 import SportAchievements from "./components/pages/sport/AchievmentsSport";
+import Graduates from "./components/pages/sport/Graduates";
 
 function App() {
   return (
@@ -152,6 +153,7 @@ function App() {
                     <Route path="/sport/sections" element={<SportSections />} />
                     <Route path="/sport/infrastructure" element={<SportInfrastructure />} />
                     <Route path="/sport/achievements" element={<SportAchievements />} />
+                    <Route path="sport/graduates" element={< Graduates />} />
 
                     {/* Science routes */}
                     <Route path="/science/publications" element={<ScientificPublications />} />

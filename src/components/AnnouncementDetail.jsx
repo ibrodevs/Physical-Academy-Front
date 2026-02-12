@@ -29,25 +29,27 @@ const AnnouncementDetailPage = () => {
         setLoading(true);
         setError(null);
 
-        
+
         const currentLanguage = i18n.language;
         const response = await axios.get(
           `${API_BASE_URL}/api/announcements/${id}/?lang=${currentLanguage}`
         );
-        
+
 
         if (response.data.success) {
           const announcementItem = response.data.announcement;
 
           // Формируем массив изображений для галереи
-          const galleryImages = [];
+          const galleryImages = []; // Инициализируем пустыми объектами для гарантированного порядка
 
           // Добавляем главное изображение первым
           if (announcementItem.image_url) {
-            galleryImages.push({
-              url: announcementItem.image_url,
-              isMain: true,
-            });
+            galleryImages.push(
+              {
+                url: announcementItem.image_url,
+                isMain: true,
+              }
+            );
           }
 
           // Добавляем изображения из галереи
@@ -69,7 +71,7 @@ const AnnouncementDetailPage = () => {
           // Сохраняем массив URL для отображения
           announcementItem.images_url = galleryImages.map((img) => img.url);
 
-          
+
           setAnnouncementData(announcementItem);
         } else {
           setError(t("announcements.detail.errors.notFound"));
@@ -77,8 +79,7 @@ const AnnouncementDetailPage = () => {
       } catch (err) {
         console.error("API Error:", err);
         setError(
-          `${t("announcements.detail.errors.loading")}: ${
-            err.response?.data?.message || err.message
+          `${t("announcements.detail.errors.loading")}: ${err.response?.data?.message || err.message
           }`
         );
       } finally {
@@ -133,7 +134,7 @@ const AnnouncementDetailPage = () => {
         alert(t("announcements.detail.share.copied"));
       }
     } catch (err) {
-      
+
     }
   };
 
@@ -412,9 +413,8 @@ const AnnouncementDetailPage = () => {
               <img
                 src={getImageUrl(images[0])}
                 alt={data.title}
-                className={`w-full h-48 sm:h-64 md:h-80 lg:h-96 object-cover transition-all duration-500 hover:scale-105 ${
-                  imageLoaded[0] ? "opacity-100" : "opacity-0"
-                }`}
+                className={`w-full h-48 sm:h-64 md:h-80 lg:h-96 object-cover transition-all duration-500 hover:scale-105 ${imageLoaded[0] ? "opacity-100" : "opacity-0"
+                  }`}
                 onLoad={() => handleImageLoad(0)}
                 onError={(e) => {
                   console.error("Image failed to load:", e);
@@ -440,7 +440,7 @@ const AnnouncementDetailPage = () => {
                         t("announcements.detail.defaultCategory")}
                     </span>
                     {/* DEBUG: Показываем urgency */}
-            
+
                     <span
                       className={`px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-semibold border ${getUrgencyBadge(
                         data.urgency
@@ -492,10 +492,9 @@ const AnnouncementDetailPage = () => {
                     transition={{ delay: 0.6 + index * 0.1 }}
                     className={`
                       relative rounded-lg sm:rounded-xl overflow-hidden shadow-md sm:shadow-lg cursor-pointer group
-                      ${
-                        index === 0
-                          ? "col-span-2 xs:col-span-3 sm:col-span-2 md:col-span-2 row-span-2 aspect-square sm:aspect-auto"
-                          : "aspect-square"
+                      ${index === 0
+                        ? "col-span-2 xs:col-span-3 sm:col-span-2 md:col-span-2 row-span-2 aspect-square sm:aspect-auto"
+                        : "aspect-square"
                       }
                     `}
                     onClick={() => openLightbox(index)}
@@ -506,8 +505,7 @@ const AnnouncementDetailPage = () => {
                       className={`
                         w-full h-full object-cover transition-all duration-500 group-hover:scale-110
                         ${imageLoaded[index] ? "opacity-100" : "opacity-0"}
-                        ${
-                          index === 0 ? "sm:min-h-[200px] md:min-h-[250px]" : ""
+                        ${index === 0 ? "sm:min-h-[200px] md:min-h-[250px]" : ""
                         }
                       `}
                       onLoad={() => handleImageLoad(index)}
@@ -771,10 +769,9 @@ const AnnouncementDetailPage = () => {
                       })}
                       className={`
                         object-cover rounded cursor-pointer transition-all duration-300
-                        ${
-                          index === currentImageIndex
-                            ? "ring-2 sm:ring-4 ring-cyan-500 scale-105"
-                            : "opacity-60 hover:opacity-100 hover:scale-105"
+                        ${index === currentImageIndex
+                          ? "ring-2 sm:ring-4 ring-cyan-500 scale-105"
+                          : "opacity-60 hover:opacity-100 hover:scale-105"
                         }
                         w-10 h-10 xs:w-12 xs:h-12 sm:w-14 sm:h-14 md:w-16 md:h-16
                       `}

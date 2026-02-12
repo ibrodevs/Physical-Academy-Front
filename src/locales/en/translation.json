@@ -9588,7 +9588,6 @@
   "master": {
     "title": "Master's Programs",
     "description": "Master's  programs provide an opportunity for in-depth study in the field of physical culture and sports, training of scientific personnel and development of research skills",
-
     "program_name": "Program",
     "info_title": "Information",
     "no_info": "Information not available",
@@ -9633,6 +9632,93 @@
       "title": "Students with Disabilities",
       "subtitle": "We strive to create an inclusive environment for all students, providing the necessary support and resources for successful learning.",
       "description": "At KSAPC, we pay special attention to supporting students with disabilities. Our academy provides various forms of educational process adaptation, including individual curricula, technical rehabilitation means, specialized equipment, and consultation assistance from specialists."
+    }
+  },
+  "graduates": {
+    "title": "Our Graduates",
+    "subtitle": "List of academy graduates",
+    "table": {
+      "name": "Student Name",
+      "year": "Graduation Year",
+      "status": "Status"
+    },
+    "status": {
+      "graduated": "Graduated"
+    },
+    "list": [
+      {
+        "id": 1,
+        "name": "Islam Makhmudov",
+        "description": "Faculty of Software Engineering",
+        "year": "2023",
+        "achievements": "With Honors"
+      },
+      {
+        "id": 2,
+        "name": "Iskhak Raiymberdiev",
+        "description": "Faculty of Information Systems",
+        "year": "2022",
+        "achievements": "Best Startup"
+      },
+      {
+        "id": 3,
+        "name": "Aizhan Askarova",
+        "description": "Faculty of Computer Science",
+        "year": "2024"
+      },
+      {
+        "id": 4,
+        "name": "Erlan Toktonaliev",
+        "description": "Faculty of Applied Mathematics",
+        "year": "2023"
+      }
+    ],
+    "stats": {
+      "total": "Total Graduates",
+      "achievements": "45",
+      "achievementsLabel": "With Honors",
+      "employment": "92%",
+      "employmentLabel": "Employed"
+    },
+    "viewAll": "View Full List of Graduates"
+  },
+  "achievementsSport": {
+    "title": "Our Athletes",
+    "subtitle": "Pride of KGAFKiS — our talented athletes and their achievements",
+    "table": {
+      "name": "Athlete Name",
+      "sport": "Sport",
+      "achievement": "Achievement"
+    },
+    "list": [
+      {
+        "id": 1,
+        "name": "Aibek Askarov",
+        "description": "International Master of Sport, Asian Champion",
+        "sport": "Judo",
+        "achievement": "🥇 Gold"
+      },
+      {
+        "id": 2,
+        "name": "Elina Mamatova",
+        "description": "Honored Master of Sport, Olympic Games participant",
+        "sport": "Swimming",
+        "achievement": "🥈 Silver"
+      },
+      {
+        "id": 3,
+        "name": "Bekzat Usenov",
+        "description": "National Champion, Asian Cup holder",
+        "sport": "Boxing",
+        "achievement": "🥇 Gold"
+      }
+    ],
+    "stats": {
+      "total": "Total Athletes",
+      "gold": "23",
+      "goldLabel": "Gold Medals",
+      "international": "15",
+      "internationalLabel": "International Victories"
     }
   }
 }

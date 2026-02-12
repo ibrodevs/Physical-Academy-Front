@@ -1013,6 +1013,27 @@ class ApiService {
       throw error;
     }
   }
+
+  async getSportAchivements(language = "ru") {
+    const langParam = this.getLanguageParam(language);
+    try {
+      const data = await this.request(`/sport-achievements/sport-achievements/?lang=${langParam}`);
+      return data.results || [];
+    } catch (error) {
+      console.error("Error fetching sport-achievements", error);
+      throw error;
+    }
+  }
+  async getGraduates(language = "ru") {
+    const langParam = this.getLanguageParam(language);
+    try {
+      const data = await this.request(`/graduates/graduates/?lang=${langParam}`);
+      return data.results || [];
+    } catch (error) {
+      console.error("Error fetching getGraduates", error);
+      throw error;
+    }
+  }
 }
 
 // Create and export a singleton instance
@@ -1152,3 +1173,8 @@ export const getFeaturedSocialCommunities =
 // Student Instructions API exports
 export const getStudentInstructions =
   apiService.getStudentInstructions.bind(apiService);
+
+
+
+export const getSportAchivements = apiService.getSportAchivements.bind(apiService);
+export const getGraduates = apiService.getGraduates.bind(apiService);

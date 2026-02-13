@@ -167,11 +167,13 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
       submenu: [
         { title: t('nav.scientific_publications', 'Научные публикации'), link: '/science/publications' },
         { title: t('nav.vestnik', 'Вестник'), link: '/science/vestnik' },
-        { title: t('nav.web_of_science', 'Web of Science'), link: '/science/web-of-science' },
-        { title: t('nav.ipchain', 'IPChain'), link: '/science/ipchain' },
-        // { title: t('nav.scopus', 'Scopus'), link: '/science/scopus' },
+        { title: t('nav.scientific_library', 'Научная библиотека'), link: '/science/library' },
+        { title: t('nav.web_of_science', 'Наукометрическая база данных'), link: '/science/web-of-science' },
+        { title: t('nav.topic_registry', 'Реестр тем'), link: '/science/topic-registry' },
+        { title: t('nav.regulations', 'Положения'), link: '/science/regulations' },
         { title: t('nav.research_and_technical_council', 'Научно-технический совет'), link: '/science/nts-committee' },
-        { title: t('nav.student_scientific_society', 'Студенческое научное общество'), link: '/science/ssu' }
+        { title: t('nav.young_scientists_council', 'Совет молодых ученых'), link: '/science/young-scientists-council' },
+        { title: t('nav.reports', 'Отчеты'), link: '/science/reports' }
       ]
     },
     admissions: {

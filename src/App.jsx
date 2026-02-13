@@ -34,9 +34,11 @@ import CollegeSports from "./components/pages/education/college/CollegeSports";
 import ScientificPublications from "./components/pages/science/ScientificPublications";
 import Vestnik from "./components/pages/science/Vestnik";
 import WebOfScience from "./components/pages/science/WebOfScience";
-import Scopus from "./components/pages/science/Scopus";
-import Ipchain from "./components/pages/science/Ipchain";
-import ScientificCouncil from "./components/pages/science/ScientificCouncil";
+import ScientificLibrary from "./components/pages/science/ScientificLibrary";
+import TopicRegistry from "./components/pages/science/TopicRegistry";
+import Regulations from "./components/pages/science/Regulations";
+import YoungScientistsCouncil from "./components/pages/science/YoungScientistsCouncil";
+import Reports from "./components/pages/science/Reports";
 
 // Students pages
 import UsefulInfo from "./components/pages/students/UsefulInfo";
@@ -71,7 +73,6 @@ import DoctorateInfo from "./components/pages/admissions/doctorate/DoctorateInfo
 import MasterProgram from "./components/pages/education/faculties/MasterProgram";
 import DoctorateProgram from "./components/pages/education/faculties/DoctorateProgram";
 import NTSCommittee from "./components/pages/science/NTSCommittee";
-import StudentScientificSociety from "./components/pages/science/StudentScientificSociety";
 import VisaSupport from "./components/pages/students/VisaSupport";
 import DetailPage from "./components/Details";
 import AnnouncementDetailPage from "./components/AnnouncementDetail";
@@ -158,12 +159,13 @@ function App() {
                     {/* Science routes */}
                     <Route path="/science/publications" element={<ScientificPublications />} />
                     <Route path="/science/vestnik" element={<Vestnik />} />
+                    <Route path="/science/library" element={<ScientificLibrary />} />
                     <Route path="/science/web-of-science" element={<WebOfScience />} />
-                    <Route path="/science/scopus" element={<Scopus />} />
-                    <Route path="/science/ipchain" element={<Ipchain />} />
-                    <Route path="/science/nts" element={<ScientificCouncil />} />
+                    <Route path="/science/topic-registry" element={<TopicRegistry />} />
+                    <Route path="/science/regulations" element={<Regulations />} />
                     <Route path="/science/nts-committee" element={<NTSCommittee />} />
-                    <Route path="/science/ssu" element={<StudentScientificSociety />} />
+                    <Route path="/science/young-scientists-council" element={<YoungScientistsCouncil />} />
+                    <Route path="/science/reports" element={<Reports />} />
 
 
                     {/* Students routes */}

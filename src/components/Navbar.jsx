@@ -2,17 +2,17 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
 import DefaultLogo from "../assets/Logo.png";
-import ScrolledLogo from "../assets/Logo.png";
 import SearchButton from './SearchButton';
+import apiService from "../services/api.js";
 
 const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
   const { t, i18n } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLangOpen, setIsLangOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState(null);
   const [nestedMenu, setNestedMenu] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [hoveredMenu, setHoveredMenu] = useState(null);
+
+  const [adminStructurePdf, setAdminStructurePdf] = useState(null);
   const menuRef = useRef(null);
   const langRef = useRef(null);
 
@@ -22,14 +22,17 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
     }
   }, [currentLanguage, i18n]);
 
-  const handleLanguageChange = (langCode) => {
-    if (changeLanguage) {
-      changeLanguage(langCode);
-    } else {
-      i18n.changeLanguage(langCode);
-    }
-    setIsLangOpen(false);
-  };
+  useEffect(() => {
+    const fetchPdf = async () => {
+      try {
+        const pdfUrl = await apiService.getAdministrativeStructurePdf(currentLanguage);
+        setAdminStructurePdf(pdfUrl);
+      } catch (error) {
+        console.error("Failed to load administrative structure PDF", error);
+      }
+    };
+    fetchPdf();
+  }, [currentLanguage]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -37,39 +40,29 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
         setActiveMenu(null);
         setNestedMenu(null);
       }
-      if (langRef.current && !langRef.current.contains(event.target)) {
-        setIsLangOpen(false);
-      }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-
+    const handleScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Функция для разделения текста на две части
+  const handleLanguageChange = (langCode) => {
+    if (changeLanguage) changeLanguage(langCode);
+    else i18n.changeLanguage(langCode);
+  };
+
   const splitText = (text) => {
     const words = text.split(' ');
     if (words.length <= 1) return [text, ''];
-
     const mid = Math.ceil(words.length / 2);
-    const firstLine = words.slice(0, mid).join(' ');
-    const secondLine = words.slice(mid).join(' ');
-
-    return [firstLine, secondLine];
+    return [words.slice(0, mid).join(' '), words.slice(mid).join(' ')];
   };
 
-  // Данные меню для КГАФКиС - используем объединенную версию
   const menuData = {
     academy: {
       title: t('nav.academy', 'Академия'),
@@ -95,14 +88,13 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
             { title: t('nav.rectorate', 'Ректорат'), link: '/academy/leadership/rectorate' },
             { title: t('nav.trade_union', 'Профсоюз'), link: '/academy/leadership/trade-union' },
             { title: t('nav.commissions', 'Комиссии'), link: '/academy/leadership/commissions' },
-            { title: t('nav.administrative_structure', 'Административная структура'), link: '/academy/structure/administrative' },
+            { title: t('nav.administrative_structure', 'Административная структура'), link: adminStructurePdf || '#', isExternal: true },
             { title: t('nav.administrative_units', 'Административные подразделения'), link: '/academy/structure/units' },
             { title: t('nav.documents', 'Документы'), link: '/academy/documents' },
           ]
         }
       ]
     },
-
     education: {
       title: t('nav.education', 'Образование'),
       submenu: [
@@ -110,48 +102,27 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
           title: t('nav.faculties', 'Факультеты'),
           hasNested: true,
           nestedItems: [
-            {
-              title: t('nav.pedagogical_national_sports', 'Педагогический и национальные виды спорта'),
-              link: '/education/faculties/pedagogical'
-            },
-            {
-              title: t('nav.coaching_faculty', 'Тренерский факультет'),
-              link: '/education/faculties/coaching'
-            },
-            {
-              title: t('nav.military_training_physical_culture', 'Военная подготовка и физическая культура'),
-              link: '/education/faculties/military-training'
-            },
-            {
-              title: t('nav.correspondence_advanced_training', 'Заочное обучение и повышение квалификации'),
-              link: '/education/faculties/correspondence'
-            },
-            {
-              title: t('nav.general_faculty_departments', 'Общефакультетские кафедры'),
-              link: '/education/departments'
-            }
+            { title: t('nav.pedagogical_national_sports', 'Педагогический и национальные виды спорта'), link: '/education/faculties/pedagogical' },
+            { title: t('nav.coaching_faculty', 'Тренерский факультет'), link: '/education/faculties/coaching' },
+            { title: t('nav.military_training_physical_culture', 'Военная подготовка и физическая культура'), link: '/education/faculties/military-training' },
+            { title: t('nav.correspondence_advanced_training', 'Заочное обучение и повышение квалификации'), link: '/education/faculties/correspondence' },
+            { title: t('nav.general_faculty_departments', 'Общефакультетские кафедры'), link: '/education/departments' }
           ]
         },
         {
           title: t('nav.master_program', 'Магистратура'),
           hasNested: true,
-          nestedItems: [
-            { title: t('nav.general_info', 'Общая информация'), link: '/education/faculties/master' },
-          ]
+          nestedItems: [{ title: t('nav.general_info', 'Общая информация'), link: '/education/faculties/master' }]
         },
         {
           title: t('nav.doctorate_program', 'Аспирантура, Докторантура, PhD'),
           hasNested: true,
-          nestedItems: [
-            { title: t('nav.general_info', 'Общая информация'), link: '/education/faculties/doctorate' },
-          ]
+          nestedItems: [{ title: t('nav.general_info', 'Общая информация'), link: '/education/faculties/doctorate' }]
         },
         {
           title: t('nav.college', 'Колледж'),
           hasNested: true,
-          nestedItems: [
-            { title: t('nav.college_physical_culture_sports', 'Колледж физической культуры и спорта'), link: '/education/college/sports' },
-          ]
+          nestedItems: [{ title: t('nav.college_physical_culture_sports', 'Колледж физической культуры и спорта'), link: '/education/college/sports' }]
         },
       ]
     },
@@ -179,18 +150,9 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
     admissions: {
       title: t('nav.admissions', 'Поступление'),
       submenu: [
-        {
-          title: t('nav.applicant', 'Абитурент'),
-          link: '/admissions/bachelor/info'
-        },
-        {
-          title: t('nav.master_program', 'Магистратура'),
-          link: '/admissions/master/info'
-        },
-        {
-          title: t('nav.doctorate_program', 'Аспирантура, Докторантура, PhD'),
-          link: '/admissions/doctorate/info'
-        },
+        { title: t('nav.applicant', 'Абитуриент'), link: '/admissions/bachelor/info' },
+        { title: t('nav.master_program', 'Магистратура'), link: '/admissions/master/info' },
+        { title: t('nav.doctorate_program', 'Аспирантура, Докторантура, PhD'), link: '/admissions/doctorate/info' },
       ]
     },
     students: {
@@ -210,223 +172,135 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
         {
           title: t('nav.useful_links', 'Полезные ссылки'),
           hasNested: true,
-          nestedItems: [
-            { title: t('nav.visa_support', 'Визовая поддержка'), link: '/students/visa-support' }
-          ]
+          nestedItems: [{ title: t('nav.visa_support', 'Визовая поддержка'), link: '/students/visa-support' }]
         }
       ]
     },
     myEdu: {
       title: t('nav.my_edu', 'Моё образование'),
-      link: 'https://myedu.kgafkis.kg/'
+      link: 'https://myedu.kgafkis.kg/',
+      isExternal: true
     },
     contacts: {
       title: t('nav.contacts', 'Контакты'),
-      submenu: [
-        { title: t('nav.contacts', 'Контакты'), link: '/contacts' },
-      ]
+      submenu: [{ title: t('nav.contacts', 'Контакты'), link: '/contacts' }]
     }
   };
 
-  // Разделяем текст для мобильной версии
   const [firstLine] = splitText(t('nav.kgafkis1', 'КГАФКиС'));
   const [secondLine] = splitText(t('nav.kgafkis2', 'КГАФКиС'));
 
   return (
-    <nav
-      className="sticky top-0 left-0 w-full z-50 transition-all duration-500 bg-white py-2 shadow-lg border-b border-blue-100"
-      ref={menuRef}
-    >
+    <nav className="sticky top-0 left-0 w-full z-50 bg-white py-2 shadow-lg border-b border-blue-100" ref={menuRef}>
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 w-full">
-          {/* Логотип - левая часть */}
+          {/* Logo Section */}
           <div className="flex-shrink-0">
             <a href="/" className="flex items-center group">
-              <div
-                className="h-14 px-3 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-105"
-              >
-                <img
-                  src={DefaultLogo}
-                  alt={t('nav.logo_alt', 'Логотип КГАФКиС')}
-                  className="h-14 w-auto object-contain transition-opacity duration-300"
-                />
-                {/* Название для десктопной версии */}
-                <h2 className="ml-3 text-xl font-bold text-blue-800 group-hover:text-teal-600 transition-colors duration-300 hidden sm:block">
+              <div className="h-14 px-3 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-105">
+                <img src={DefaultLogo} alt="Logo" className="h-14 w-auto object-contain" />
+                <h2 className="ml-3 text-xl font-bold text-blue-800 hidden sm:block">
                   {t('nav.kgafkis', 'КГАФКиС')}
                 </h2>
-
-                {/* Название для мобильной версии - разделено на две строки */}
-                <div className="ml-2 xs:flex sm:hidden flex-col">
+                <div className="ml-2 flex sm:hidden flex-col">
                   <span className="text-sm font-bold text-blue-800 leading-tight">{firstLine}</span>
-                  <br />
                   <span className="text-sm font-bold text-blue-800 leading-tight">{secondLine}</span>
                 </div>
               </div>
             </a>
           </div>
 
-          {/* Центральное меню - скрыто на мобильных */}
-          <div className="flex items-center space-x-6">
-            <div className="hidden min-[1475px]:flex flex-1 justify-center">
-              {Object.entries(menuData).map(([key, item]) => (
-                <div
-                  key={key}
-                  className="relative"
-                  onMouseEnter={() => {
-                    setActiveMenu(key);
-                    setHoveredMenu(key);
-                  }}
-                  onMouseLeave={() => {
-                    setHoveredMenu(null);
-                    setTimeout(() => {
-                      if (hoveredMenu !== key) {
-                        setActiveMenu(null);
-                        setNestedMenu(null);
-                      }
-                    }, 200);
-                  }}
-                >
-                  {item.link ? (
-                    // Простая ссылка для главной страницы
-                    <a
-                      href={item.link}
-                      className="relative px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-300 group text-blue-800 hover:text-teal-600 hover:bg-blue-50 flex items-center"
-                    >
-                      <span className="relative z-10">{item.title}</span>
-                      <div className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-teal-400 transition-all duration-300 group-hover:w-3/4`}></div>
-                    </a>
-                  ) : (
-                    // Кнопка с выпадающим меню для остальных пунктов
-                    <>
-                      <button
-                        className={`relative px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-300 group ${activeMenu === key
-                          ? 'text-white bg-gradient-to-r from-teal-500 to-emerald-500 shadow-lg'
-                          : 'text-blue-800 hover:text-teal-600 hover:bg-blue-50'
-                          }`}
-                      >
-                        <span className="relative z-10">{item.title}</span>
-                        <div className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-teal-400 transition-all duration-300 group-hover:w-3/4 ${activeMenu === key ? 'w-3/4' : ''
-                          }`}></div>
-                      </button>
+          {/* Desktop Menu */}
+          <div className="hidden min-[1475px]:flex items-center justify-center flex-1">
+            {Object.entries(menuData).map(([key, item]) => (
+              <div
+                key={key}
+                className="relative flex items-center h-16"
+                onMouseEnter={() => setActiveMenu(key)}
+                onMouseLeave={() => { setActiveMenu(null); setNestedMenu(null); }}
+              >
+                {item.link ? (
+                  <a
+                    href={item.link}
+                    target={item.isExternal ? "_blank" : "_self"}
+                    rel={item.isExternal ? "noopener noreferrer" : ""}
+                    className="px-4 py-2 rounded-lg text-sm font-semibold text-blue-800 hover:text-teal-600 transition-all"
+                  >
+                    {item.title}
+                  </a>
+                ) : (
+                  <div className="relative">
+                    <button className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeMenu === key ? 'text-white bg-gradient-to-r from-teal-500 to-emerald-500 shadow-md' : 'text-blue-800 hover:text-teal-600'}`}>
+                      {item.title}
+                    </button>
 
-                      {/* Выпадающее меню с анимацией */}
-                      {activeMenu === key && (
-                        <div
-                          className="absolute left-1/2 transform -translate-x-1/2 mt-2 min-w-[16rem] rounded-xl shadow-2xl bg-white/95 backdrop-blur-md ring-1 ring-blue-100 overflow-visible z-50 transition-all duration-300"
-                          style={{ transformOrigin: 'top center' }}
-                          onMouseEnter={() => setActiveMenu(key)}
-                          onMouseLeave={() => {
-                            setActiveMenu(null);
-                            setNestedMenu(null);
-                          }}
-                        >
-                          <div className="py-2">
-                            {item.submenu.map((subItem, index) => (
-                              <div
-                                key={index}
-                                className="relative"
-                                onMouseEnter={() => {
-                                  if (subItem.hasNested) setNestedMenu(`${key}-${index}`);
-                                  else setNestedMenu(null);
-                                }}
-                                onMouseLeave={() => {
-                                  setNestedMenu(prev => (prev === `${key}-${index}` ? null : prev));
-                                }}
-                              >
-                                {subItem.hasNested ? (
-                                  <>
-                                    <button
-                                      className="flex justify-between items-center w-full px-4 py-3 text-sm text-gray-800 hover:bg-teal-50 hover:text-teal-700 transition-colors duration-200 border-l-4 border-transparent hover:border-teal-400"
-                                    >
-                                      <span>{subItem.title}</span>
-                                      <svg
-                                        className="h-4 w-4 text-gray-400"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                      >
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                      </svg>
-                                    </button>
-
-                                    {/* Вложенное меню */}
-                                    {subItem.hasNested && nestedMenu === `${key}-${index}` && (
-                                      <div
-                                        className="absolute left-full top-0 ml-[1px] w-56 rounded-xl shadow-2xl bg-white/95 backdrop-blur-md ring-1 ring-blue-100 z-50 transition-all duration-200"
-                                        onMouseEnter={() => setNestedMenu(`${key}-${index}`)}
-                                        onMouseLeave={() => setNestedMenu(null)}
-                                      >
-                                        <div className="py-2">
-                                          {subItem.nestedItems.map((nestedItem, nestedIndex) => (
-                                            <a
-                                              key={nestedIndex}
-                                              href={nestedItem.link}
-                                              className="block px-4 py-3 text-sm text-gray-800 hover:bg-teal-50 hover:text-teal-700 transition-colors duration-200 border-l-4 border-transparent hover:border-emerald-400"
-                                            >
-                                              {nestedItem.title}
-                                            </a>
-                                          ))}
-                                        </div>
-                                      </div>
-                                    )}
-                                  </>
-                                ) : (
-                                  <a
-                                    href={subItem.link}
-                                    className="flex justify-between items-center px-4 py-3 text-sm text-gray-800 hover:bg-teal-50 hover:text-teal-700 transition-colors duration-200 border-l-4 border-transparent hover:border-teal-400"
-                                  >
+                    {activeMenu === key && (
+                      <div className="absolute left-1/2 transform -translate-x-1/2 top-full min-w-[16rem] z-50 pt-2">
+                        {/* Контейнер БЕЗ overflow-hidden чтобы вложенное меню было видно */}
+                        <div className="rounded-xl shadow-2xl bg-white ring-1 ring-blue-100 py-2">
+                          {item.submenu.map((subItem, index) => (
+                            <div
+                              key={index}
+                              className="relative"
+                              onMouseEnter={() => subItem.hasNested && setNestedMenu(`${key}-${index}`)}
+                              onMouseLeave={() => setNestedMenu(null)}
+                            >
+                              {subItem.hasNested ? (
+                                <>
+                                  <button className="flex justify-between items-center w-full px-4 py-3 text-sm text-gray-800 hover:bg-teal-50 transition-colors">
                                     <span>{subItem.title}</span>
-                                  </a>
-                                )}
-                              </div>
-                            ))}
-                          </div>
+                                    <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                                  </button>
+
+                                  {nestedMenu === `${key}-${index}` && (
+                                    <div className="absolute left-full top-0 w-64 pl-2">
+                                      <div className="rounded-xl shadow-2xl bg-white ring-1 ring-blue-100 py-2">
+                                        {subItem.nestedItems.map((nestedItem, nIdx) => (
+                                          <a
+                                            key={nIdx}
+                                            href={nestedItem.link}
+                                            target={nestedItem.isExternal ? "_blank" : "_self"}
+                                            className="block px-4 py-3 text-sm text-gray-800 hover:bg-teal-50 border-l-4 border-transparent hover:border-emerald-400"
+                                          >
+                                            {nestedItem.title}
+                                          </a>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+                                </>
+                              ) : (
+                                <a
+                                  href={subItem.link}
+                                  target={subItem.isExternal ? "_blank" : "_self"}
+                                  className="block px-4 py-3 text-sm text-gray-800 hover:bg-teal-50 border-l-4 border-transparent hover:border-teal-400"
+                                >
+                                  {subItem.title}
+                                </a>
+                              )}
+                            </div>
+                          ))}
                         </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              ))}
-            </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
 
-          {/* Правая часть: язык и мобильное меню */}
+          {/* Right Actions */}
           <div className="flex items-center space-x-3">
-            {/* Кнопка поиска */}
             <SearchButton isScrolled={true} />
-
-            {/* Переключатель языка */}
             <div className="relative" ref={langRef}>
-              <LanguageSwitcher
-                variant="outline"
-                showText={true}
-                onChange={handleLanguageChange}
-                languages={languages}
-                currentLanguage={currentLanguage}
-              />
+              <LanguageSwitcher variant="outline" showText={true} onChange={handleLanguageChange} languages={languages} currentLanguage={currentLanguage} />
             </div>
-
-            {/* Кнопка мобильного меню */}
             <div className="block min-[1475px]:hidden">
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="inline-flex items-center justify-center p-3 rounded-xl transition-all duration-300 hover:scale-110 text-blue-700 hover:bg-teal-50 border border-blue-200 focus:outline-none backdrop-blur-sm"
-                aria-expanded={isMenuOpen}
-              >
-                <span className="sr-only">
-                  {isMenuOpen
-                    ? t('nav.close_menu', 'Закрыть меню')
-                    : t('nav.open_menu', 'Открыть меню')
-                  }
-                </span>
-                {!isMenuOpen ? (
-                  <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  </svg>
+              <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-3 rounded-xl border border-blue-200 text-blue-700 hover:bg-teal-50 transition-all">
+                {isMenuOpen ? (
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                 ) : (
-                  <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
                 )}
               </button>
             </div>
@@ -434,83 +308,47 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
         </div>
       </div>
 
-      {/* Мобильное меню с анимацией */}
+      {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="block min-[1475px]:hidden bg-white backdrop-blur-md shadow-xl border-t border-blue-100 transform transition-all duration-300 ease-out animate-in slide-in-from-top-2 fade-in">
+        <div className="block min-[1475px]:hidden bg-white shadow-xl border-t border-blue-100 animate-in slide-in-from-top-2">
           <div className="px-4 pt-2 pb-6 space-y-1">
             {Object.entries(menuData).map(([key, item]) => (
-              <div key={key} className="relative">
+              <div key={key}>
                 {item.link ? (
-                  // Простая ссылка для главной страницы в мобильном меню
-                  <a
-                    href={item.link}
-                    className="block w-full text-left px-4 py-4 rounded-xl text-base font-semibold text-blue-800 hover:bg-teal-50 hover:text-teal-700 transition-colors duration-200 border-l-4 border-transparent hover:border-teal-400"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
+                  <a href={item.link} className="block px-4 py-4 rounded-xl text-base font-semibold text-blue-800" onClick={() => setIsMenuOpen(false)}>
                     {item.title}
                   </a>
                 ) : (
-                  // Кнопка с раскрывающимся меню для остальных пунктов
                   <>
                     <button
                       onClick={() => setActiveMenu(activeMenu === key ? null : key)}
-                      className={`w-full text-left flex justify-between items-center px-4 py-4 rounded-xl text-base font-semibold transition-colors duration-200 border-l-4 ${activeMenu === key
-                        ? 'bg-gradient-to-r from-teal-500 to-emerald-500 text-white shadow-lg border-teal-400'
-                        : 'text-blue-800 hover:bg-teal-50 hover:text-teal-700 border-transparent hover:border-teal-400'
-                        }`}
+                      className={`w-full text-left flex justify-between items-center px-4 py-4 rounded-xl text-base font-semibold border-l-4 ${activeMenu === key ? 'bg-teal-500 text-white' : 'text-blue-800 border-transparent hover:bg-teal-50'}`}
                     >
                       {item.title}
-                      <svg
-                        className={`h-5 w-5 transition-transform duration-300 ${activeMenu === key ? 'rotate-180' : ''}`}
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                      </svg>
+                      <svg className={`h-5 w-5 ${activeMenu === key ? 'rotate-180' : ''}`} fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
                     </button>
-
                     {activeMenu === key && (
-                      <div className="pl-6 mt-2 space-y-2 transition-all duration-300">
-                        {item.submenu.map((subItem, index) => (
-                          <div key={index}>
+                      <div className="pl-6 mt-2 space-y-2">
+                        {item.submenu.map((subItem, idx) => (
+                          <div key={idx}>
                             {subItem.hasNested ? (
-                              <div>
-                                <button
-                                  onClick={() => setNestedMenu(nestedMenu === `${key}-${index}` ? null : `${key}-${index}`)}
-                                  className="w-full text-left flex justify-between items-center px-4 py-3 rounded-lg text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 transition-colors duration-200 border-l-4 border-transparent hover:border-emerald-400"
-                                >
+                              <>
+                                <button onClick={() => setNestedMenu(nestedMenu === `${key}-${idx}` ? null : `${key}-${idx}`)} className="w-full text-left flex justify-between px-4 py-3 text-sm text-gray-700">
                                   {subItem.title}
-                                  <svg
-                                    className={`h-4 w-4 transition-transform duration-300 ${nestedMenu === `${key}-${index}` ? 'rotate-90' : ''}`}
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                  >
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                  </svg>
+                                  <svg className={`h-4 w-4 ${nestedMenu === `${key}-${idx}` ? 'rotate-90' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 5l7 7-7 7" /></svg>
                                 </button>
-
-                                {nestedMenu === `${key}-${index}` && (
-                                  <div className="pl-4 mt-1 space-y-1">
-                                    {subItem.nestedItems.map((nestedItem, nestedIndex) => (
-                                      <a
-                                        key={nestedIndex}
-                                        href={nestedItem.link}
-                                        className="block px-4 py-3 rounded-lg text-sm text-gray-600 hover:bg-teal-50 hover:text-teal-700 transition-colors duration-200 border-l-4 border-transparent hover:border-emerald-400"
-                                        onClick={() => setIsMenuOpen(false)}
-                                      >
-                                        {nestedItem.title}
+                                {nestedMenu === `${key}-${idx}` && (
+                                  <div className="pl-4 space-y-1">
+                                    {subItem.nestedItems.map((nItem, nIdx) => (
+                                      <a key={nIdx} href={nItem.link} className="block px-4 py-3 text-sm text-gray-600" onClick={() => setIsMenuOpen(false)}>
+                                        {nItem.title}
                                       </a>
                                     ))}
                                   </div>
                                 )}
-                              </div>
+                              </>
                             ) : (
-                              <a
-                                href={subItem.link}
-                                className="block px-4 py-3 rounded-lg text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 transition-colors duration-200 border-l-4 border-transparent hover:border-teal-400"
-                                onClick={() => setIsMenuOpen(false)}
-                              >
+                              <a href={subItem.link} className="block px-4 py-3 text-sm text-gray-700" onClick={() => setIsMenuOpen(false)}>
                                 {subItem.title}
                               </a>
                             )}

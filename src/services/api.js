@@ -1034,6 +1034,18 @@ class ApiService {
       throw error;
     }
   }
+  // Внутри класса ApiService
+  async getAdministrativeStructurePdf(language = "ru") {
+    const langParam = this.getLanguageParam(language);
+    try {
+      const data = await this.request(`/administrative-structure/?lang=${langParam}`);
+      // Возвращаем прямую ссылку на PDF из ответа
+      return data.pdf_file;
+    } catch (error) {
+      console.error("Ошибка при получении структуры PDF:", error);
+      return null;
+    }
+  }
 }
 
 // Create and export a singleton instance
@@ -1178,3 +1190,4 @@ export const getStudentInstructions =
 
 export const getSportAchivements = apiService.getSportAchivements.bind(apiService);
 export const getGraduates = apiService.getGraduates.bind(apiService);
+export const getAdministrativeStructurePdf = apiService.getAdministrativeStructurePdf.bind(apiService);

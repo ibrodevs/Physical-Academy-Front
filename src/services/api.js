@@ -1046,17 +1046,38 @@ class ApiService {
       return null;
     }
   }
-  async getAboutJournal(language = "ru") {
-    const langParam = this.getAboutJournal(language);
+  async getVestnikData(tab, language = "ru") {
+    const langParam = this.getLanguageParam(language);
     try {
-      const data = await this.request(`/api/journal/about/?lang=${langParam}`);
-      return data.results || []
+      const data = await this.request(`/journal/${tab}/?lang=${langParam}`);
+
+      // Handle different response formats
+      if (data.results) {
+        // Paginated response
+        if (Array.isArray(data.results) && data.results.length > 0) {
+          const firstResult = data.results[0];
+          // Check if it's an array of sections with content
+          if (typeof firstResult === 'object' && firstResult.section) {
+            // Find the specific section
+            const section = data.results.find(item => item.section === tab);
+            return section ? section.content : null;
+          }
+          // For editorial-office, archive - return the array
+          return data.results;
+        }
+        return data.results;
+      } else {
+        // Direct object response (like latest-issue)
+        return data;
+      }
     } catch (error) {
-      console.error('Issue taking', error)
-      return null
+      console.error(`Error fetching vestnik tab ${tab}:`, error);
+      throw error;
     }
   }
+
 }
+
 
 // Create and export a singleton instance
 const apiService = new ApiService();
@@ -1196,7 +1217,7 @@ export const getFeaturedSocialCommunities =
 export const getStudentInstructions =
   apiService.getStudentInstructions.bind(apiService);
 
-export const getAboutJournal = apiService.getAboutJournal.bind(apiService)
+export const getVestnikData = apiService.getVestnikData.bind(apiService);
 
 
 

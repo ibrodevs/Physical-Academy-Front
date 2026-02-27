@@ -1,17 +1,25 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios"; // Предположим, используем axios или замените на свой api-клиент
-
-const API_BASE = "/api/journal";
+import apiService from "../../../services/api";
+const SkeletonLoader = () => (
+  <div className="animate-pulse space-y-6">
+    <div className="h-10 bg-white/5 w-1/3 rounded-xl"></div>
+    <div className="space-y-3">
+      <div className="h-4 bg-white/5 w-full rounded"></div>
+      <div className="h-4 bg-white/5 w-full rounded"></div>
+      <div className="h-4 bg-white/5 w-2/3 rounded"></div>
+    </div>
+  </div>
+);
 
 const Vestnik = () => {
   const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState("about");
-  const [content, setContent] = useState(null);
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Список разделов для навигации
   const menuItems = [
     { id: "about", label: t("vestnik.about", "Сведения о журнале") },
     { id: "aims", label: t("vestnik.aims", "Цели и сфера") },
@@ -19,158 +27,148 @@ const Vestnik = () => {
     { id: "editorial-board", label: t("vestnik.board", "Редколлегия") },
     { id: "guidelines", label: t("vestnik.guidelines", "Руководство для авторов") },
     { id: "latest-issue", label: t("vestnik.latest", "Последний номер") },
-    { id: "archive", label: t("vestnik.archive", "Архив") },
-    { id: "requirements", label: t("vestnik.reqs", "Требования") },
+    { id: "archive", label: t("vestnik.archieve", "Архив") },
+    { id: "requirements", label: t("vestnik.requirements", "Требования") },
     { id: "indexing", label: t("vestnik.indexing", "Индексирование") },
     { id: "ethics", label: t("vestnik.ethics", "Этика") },
     { id: "contacts", label: t("vestnik.contacts", "Контакты") },
   ];
 
-  const fetchData = useCallback(async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
-    const lang = i18n.language?.split("-")[0] || "ru";
+    setError(null);
     try {
-      let url = `${API_BASE}/${activeTab}/?lang=${lang}`;
-      // Для текстовых разделов API ожидает /<section>/, для спец. разделов — свои эндпоинты
-      const response = await axios.get(url);
-      setContent(response.data);
-    } catch (error) {
-      console.error("Fetch error:", error);
-      setContent(null);
+      const result = await apiService.getVestnikData(activeTab, i18n.language);
+      setData(result);
+    } catch (err) {
+      console.error("Ошибка загрузки вкладки:", activeTab, err);
+      setError("Не удалось загрузить данные");
     } finally {
       setLoading(false);
     }
   }, [activeTab, i18n.language]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    loadData();
+  }, [loadData]);
+
+  const renderContent = () => {
+    if (loading) return <SkeletonLoader />;
+    if (error) return <div className="text-red-400 py-10 text-center">{error}</div>;
+    if (!data) return null;
+
+    // СЛУЧАЙ 1: Редакция (массив с объектами)
+    if (activeTab === "editorial-office" && Array.isArray(data)) {
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {data.map((person, i) => (
+            <div key={i} className="bg-white/5 p-6 rounded-3xl border border-white/10 flex items-center gap-5">
+              <img
+                src={person.photo || "/placeholder-user.png"}
+                className="w-20 h-20 rounded-full object-cover border-2 border-emerald-500"
+                alt={person.full_name}
+              />
+              <div>
+                <h4 className="text-white font-bold">{person.full_name}</h4>
+                <p className="text-emerald-400 text-sm">{person.position}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // СЛУЧАЙ 2: Редколлегия (простой массив строк)
+    if (activeTab === "editorial-board" && Array.isArray(data)) {
+      return (
+        <div className="flex flex-col gap-3">
+          {data.map((item, i) => (
+            <div
+              key={i}
+              className="p-4 bg-white/5 rounded-2xl border border-white/5 text-slate-200 text-lg font-medium hover:bg-white/10 transition-all"
+            >
+              {/* Отображаем текст без цифр */}
+              {typeof item === 'string' ? item : item.full_name}
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // СЛУЧАЙ 3: Архив или Последний выпуск (массивы или одиночные объекты с PDF)
+    if (activeTab === "archive" || activeTab === "latest-issue") {
+      const items = Array.isArray(data) ? data : [data];
+      return (
+        <div className="space-y-4">
+          {items.map((item, i) => (
+            <div key={i} className="flex justify-between items-center p-6 bg-slate-800/50 rounded-2xl border border-white/5">
+              <div>
+                <span className="text-emerald-400 text-xs font-bold uppercase">{item.year}</span>
+                <h3 className="text-white font-bold text-lg">{item.title}</h3>
+              </div>
+              {item.pdf_file && (
+                <a href={item.pdf_file} target="_blank" rel="noreferrer" className="bg-emerald-500 text-slate-900 px-5 py-2 rounded-xl font-bold hover:bg-emerald-400 transition-colors">
+                  PDF
+                </a>
+              )}
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // СЛУЧАЙ 4: Текстовые разделы (объект с полем content)
+    const htmlContent = data.content || (typeof data === 'string' ? data : "");
+    return (
+      <div
+        className="prose prose-invert max-w-none prose-emerald"
+        dangerouslySetInnerHTML={{ __html: htmlContent }}
+      />
+    );
+  };
 
   return (
-    <section className="min-h-screen bg-slate-900 py-12 lg:py-20 text-white">
-      <div className="container mx-auto px-4">
-        <h1 className="text-3xl md:text-4xl font-bold text-center mb-12 uppercase tracking-wider">
-          {t("vestnik.title", "Вестник университета")}
-        </h1>
+    <div className="min-h-screen bg-[#0f172a] text-slate-300 py-20 px-4">
+      <div className="max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Левое меню (Sidebar) */}
-          <aside className="lg:col-span-4 space-y-2">
-            <div className="sticky top-24 bg-white/5 p-4 rounded-2xl border border-white/10 backdrop-blur-sm">
-              {menuItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveTab(item.id)}
-                  className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-200 mb-1 ${activeTab === item.id
-                      ? "bg-emerald-500 text-white shadow-lg"
-                      : "hover:bg-white/10 text-slate-300"
-                    }`}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-          </aside>
+          {/* Левое меню */}
+          <nav className="lg:col-span-4 space-y-2">
+            <h2 className="text-2xl font-black text-white mb-8 uppercase tracking-tighter">
+              Вестник <span className="text-emerald-500">КГАФКиС</span>
+            </h2>
+            {menuItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                className={`w-full text-left px-6 py-4 rounded-2xl font-bold transition-all ${activeTab === item.id
+                  ? "bg-emerald-500 text-slate-900 shadow-lg shadow-emerald-500/20"
+                  : "hover:bg-white/5 text-slate-400"
+                  }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
 
-          {/* Правая часть (Контент) */}
-          <main className="lg:col-span-8 bg-white/5 p-6 md:p-10 rounded-3xl border border-white/10 min-h-[600px] relative">
+          {/* Правая часть с контентом */}
+          <main className="lg:col-span-8 bg-slate-900/50 rounded-[2.5rem] p-8 md:p-12 border border-white/5 min-h-[500px]">
             <AnimatePresence mode="wait">
-              {loading ? (
-                <SkeletonLoader key="loader" />
-              ) : (
-                <motion.div
-                  key={activeTab}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                >
-                  {renderContent(activeTab, content, t)}
-                </motion.div>
-              )}
+              <motion.div
+                key={activeTab + loading}
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+              >
+                {renderContent()}
+              </motion.div>
             </AnimatePresence>
           </main>
+
         </div>
       </div>
-    </section>
+    </div>
   );
 };
-
-// Функция отрисовки контента в зависимости от раздела
-const renderContent = (tab, data, t) => {
-  if (!data) return <p className="text-slate-400">{t("no_data", "Данные загружаются или отсутствуют...")}</p>;
-
-  // 1. Редакция (Editorial Office)
-  if (tab === "editorial-office") {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {data.map((person, idx) => (
-          <div key={idx} className="bg-white/5 p-4 rounded-2xl border border-white/10 text-center">
-            <img src={person.photo} alt={person.full_name} className="w-32 h-32 mx-auto rounded-full object-cover mb-4 border-2 border-emerald-400" />
-            <h4 className="text-xl font-bold">{person.full_name}</h4>
-            <p className="text-emerald-400 text-sm mt-2">{person.position}</p>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  // 2. Редколлегия (Editorial Board - простой список)
-  if (tab === "editorial-board") {
-    return (
-      <ul className="space-y-3">
-        {data.map((name, idx) => (
-          <li key={idx} className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
-            <span className="text-emerald-400 font-mono">{idx + 1}.</span>
-            {name}
-          </li>
-        ))}
-      </ul>
-    );
-  }
-
-  // 3. Последний выпуск и Архив
-  if (tab === "latest-issue" || tab === "archive") {
-    const items = Array.isArray(data) ? data : [data];
-    return (
-      <div className="space-y-6">
-        {items.map((issue, idx) => (
-          <div key={idx} className="flex flex-col md:flex-row items-center gap-6 p-6 bg-white/5 rounded-2xl border border-white/10">
-            {/* Если есть фото обложки для последнего номера, можно добавить условие */}
-            <div className="flex-1 text-center md:text-left">
-              <h3 className="text-2xl font-bold text-emerald-400">{issue.year}</h3>
-              <p className="text-xl mb-4">{issue.title}</p>
-              <a
-                href={issue.pdf_file}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 px-6 py-2 rounded-full transition-colors"
-              >
-                <span>📄 PDF</span>
-                <span>{t("download", "Открыть")}</span>
-              </a>
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  // 4. Обычные текстовые разделы (CKEditor контент)
-  return (
-    <div
-      className="prose prose-invert max-w-none text-slate-200 leading-relaxed"
-      dangerouslySetInnerHTML={{ __html: data.content || "" }}
-    />
-  );
-};
-
-const SkeletonLoader = () => (
-  <div className="animate-pulse space-y-4">
-    <div className="h-8 bg-white/10 w-1/3 rounded"></div>
-    <div className="h-4 bg-white/10 w-full rounded"></div>
-    <div className="h-4 bg-white/10 w-full rounded"></div>
-    <div className="h-4 bg-white/10 w-2/3 rounded"></div>
-  </div>
-);
 
 export default Vestnik;

@@ -1046,6 +1046,16 @@ class ApiService {
       return null;
     }
   }
+  async getAboutJournal(language = "ru") {
+    const langParam = this.getAboutJournal(language);
+    try {
+      const data = await this.request(`/api/journal/about/?lang=${langParam}`);
+      return data.results || []
+    } catch (error) {
+      console.error('Issue taking', error)
+      return null
+    }
+  }
 }
 
 // Create and export a singleton instance
@@ -1185,6 +1195,8 @@ export const getFeaturedSocialCommunities =
 // Student Instructions API exports
 export const getStudentInstructions =
   apiService.getStudentInstructions.bind(apiService);
+
+export const getAboutJournal = apiService.getAboutJournal.bind(apiService)
 
 
 

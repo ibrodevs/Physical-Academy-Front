@@ -131,7 +131,6 @@
     }
   },
   "vestnik": {
-    "title": "University Bulletin",
     "about": "About the Journal",
     "aims": "Aims and Scope",
     "office": "Editorial Office",
@@ -146,7 +145,7 @@
     "contacts": "Contacts",
     "errorTitle": "Error loading data",
     "retry": "Retry",
-    "title": "Bulletin",
+    "title": "VESTNIK KSAPCS",
     "subtitle": "Advanced research in physical culture and sports",
     "views": {
       "current": "Current issue",

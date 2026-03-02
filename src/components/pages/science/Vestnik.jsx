@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import apiService from "../../../services/api";
+
 const SkeletonLoader = () => (
   <div className="animate-pulse space-y-6">
     <div className="h-10 bg-white/5 w-1/3 rounded-xl"></div>
@@ -57,7 +58,6 @@ const Vestnik = () => {
     if (error) return <div className="text-red-400 py-10 text-center">{error}</div>;
     if (!data) return null;
 
-    // СЛУЧАЙ 1: Редакция (массив с объектами)
     if (activeTab === "editorial-office" && Array.isArray(data)) {
       return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -78,16 +78,14 @@ const Vestnik = () => {
       );
     }
 
-    // СЛУЧАЙ 2: Редколлегия (простой массив строк)
     if (activeTab === "editorial-board" && Array.isArray(data)) {
       return (
         <div className="flex flex-col gap-3">
           {data.map((item, i) => (
             <div
               key={i}
-              className="p-4 bg-white/5 rounded-2xl border border-white/5 text-slate-200 text-lg font-medium hover:bg-white/10 transition-all"
+              className="p-4 bg-white/5 rounded-2xl border border-white/5 text-white text-lg font-medium hover:bg-white/10 transition-all"
             >
-              {/* Отображаем текст без цифр */}
               {typeof item === 'string' ? item : item.full_name}
             </div>
           ))}
@@ -95,7 +93,6 @@ const Vestnik = () => {
       );
     }
 
-    // СЛУЧАЙ 3: Архив или Последний выпуск (массивы или одиночные объекты с PDF)
     if (activeTab === "archive" || activeTab === "latest-issue") {
       const items = Array.isArray(data) ? data : [data];
       return (
@@ -117,26 +114,28 @@ const Vestnik = () => {
       );
     }
 
-    // СЛУЧАЙ 4: Текстовые разделы (объект с полем content)
     const htmlContent = data.content || (typeof data === 'string' ? data : "");
     return (
       <div
-        className="prose prose-invert max-w-none prose-emerald"
+        // Добавлен принудительный класс text-white и переопределение стилей для всех вложенных элементов
+        className="prose prose-invert max-w-none prose-emerald text-white [&_*]:text-white/90"
         dangerouslySetInnerHTML={{ __html: htmlContent }}
       />
     );
   };
+  
 
   return (
     <div className="min-h-screen bg-[#0f172a] text-slate-300 py-20 px-4">
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
 
-          {/* Левое меню */}
           <nav className="lg:col-span-4 space-y-2">
+            {/* ИСПРАВЛЕНИЕ: Заголовок теперь использует t() для перевода */}
             <h2 className="text-2xl font-black text-white mb-8 uppercase tracking-tighter">
-              Вестник <span className="text-emerald-500">КГАФКиС</span>
+              {t("vestnik.title", "Вестник")} 
             </h2>
+            
             {menuItems.map((item) => (
               <button
                 key={item.id}
@@ -151,7 +150,6 @@ const Vestnik = () => {
             ))}
           </nav>
 
-          {/* Правая часть с контентом */}
           <main className="lg:col-span-8 bg-slate-900/50 rounded-[2.5rem] p-8 md:p-12 border border-white/5 min-h-[500px]">
             <AnimatePresence mode="wait">
               <motion.div

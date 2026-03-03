@@ -53,6 +53,14 @@ const Vestnik = () => {
     loadData();
   }, [loadData]);
 
+  const renderConten = () => {
+    if (data.activeTab === "latest-issue") {
+      console.log("Данные для редакции:", data);
+    }
+  }
+
+  console.log("Текущая вкладка:", activeTab);
+
   const renderContent = () => {
     if (loading) return <SkeletonLoader />;
     if (error) return <div className="text-red-400 py-10 text-center">{error}</div>;
@@ -60,7 +68,7 @@ const Vestnik = () => {
 
     if (activeTab === "editorial-office" && Array.isArray(data)) {
       return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="flex flex-col gap-4 ">
           {data.map((person, i) => (
             <div key={i} className="bg-white/5 p-6 rounded-3xl border border-white/10 flex items-center gap-5">
               <img
@@ -80,11 +88,11 @@ const Vestnik = () => {
 
     if (activeTab === "editorial-board" && Array.isArray(data)) {
       return (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 h-64 overflow-y-auto">
           {data.map((item, i) => (
             <div
               key={i}
-              className="p-4 bg-white/5 rounded-2xl border border-white/5 text-white text-lg font-medium hover:bg-white/10 transition-all"
+              className="p-4 bg-white/5 rounded-2xl border border-white/5 text-white text-lg font-medium  hover:bg-white/10 transition-all"
             >
               {typeof item === 'string' ? item : item.full_name}
             </div>
@@ -114,16 +122,22 @@ const Vestnik = () => {
       );
     }
 
+
+
+
     const htmlContent = data.content || (typeof data === 'string' ? data : "");
     return (
       <div
-        // Добавлен принудительный класс text-white и переопределение стилей для всех вложенных элементов
-        className="prose prose-invert max-w-none prose-emerald text-white [&_*]:text-white/90"
+        className="prose prose-invert max-w-none prose-emerald text-white 
+               [&_*]:text-white/90 [&_*]:!bg-transparent [&_span]:!bg-transparent
+               [&_*]:!text-white
+               break-words overflow-x-auto
+               [&_table]:display-block [&_table]:overflow-x-auto [&_table]:max-w-full"
         dangerouslySetInnerHTML={{ __html: htmlContent }}
       />
     );
   };
-  
+
 
   return (
     <div className="min-h-screen bg-[#0f172a] text-slate-300 py-20 px-4">
@@ -133,9 +147,9 @@ const Vestnik = () => {
           <nav className="lg:col-span-4 space-y-2">
             {/* ИСПРАВЛЕНИЕ: Заголовок теперь использует t() для перевода */}
             <h2 className="text-2xl font-black text-white mb-8 uppercase tracking-tighter">
-              {t("vestnik.title", "Вестник")} 
+              {t("vestnik.title", "Вестник")}
             </h2>
-            
+
             {menuItems.map((item) => (
               <button
                 key={item.id}

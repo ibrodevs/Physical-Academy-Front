@@ -2843,6 +2843,12 @@
       "publications": {
         "title": "Scientific Publications",
         "subtitle": "Our research and scientific works in physical culture and sports",
+        "searchPlaceholder": "Search by title, author…",
+        "authors": "Authors",
+        "download": "Open file",
+        "noFile": "File missing",
+        "notFound": "Nothing found",
+        "empty": "List is empty",
         "filters": {
           "searchLabel": "Search publications",
           "searchPlaceholder": "Title, author, keywords...",

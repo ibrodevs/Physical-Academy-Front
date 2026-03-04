@@ -39,7 +39,9 @@ const LanguageSwitcher = ({
 
   // Смена языка
   const handleLanguageChange = (languageCode) => {
+    console.log('Changing language to:', languageCode);
     i18n.changeLanguage(languageCode);
+    console.log('Language changed to:', i18n.language);
     setIsOpen(false);
     if (onChange) {
       onChange(languageCode);

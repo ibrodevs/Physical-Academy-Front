@@ -15,13 +15,15 @@ const resources = {
   ky: { translation: translationKG },
 };
 
+console.log('i18n resources loaded:', resources);
+
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources,
     fallbackLng: "en",
-    debug: false,
+    debug: true,
     interpolation: {
       escapeValue: false,
     },

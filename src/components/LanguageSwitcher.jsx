@@ -3,11 +3,11 @@ import { useTranslation } from 'react-i18next';
 import EnIcon from '../assets/En_icon.png';
 import RuIcon from '../assets/Ru_icon.svg';
 import KgIcon from '../assets/Kg_icon.svg';
-const LanguageSwitcher = ({ 
+const LanguageSwitcher = ({
   position = 'bottom-right',
   showText = true,
   variant = 'default',
-  onChange 
+  onChange
 }) => {
   const { i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -48,6 +48,9 @@ const LanguageSwitcher = ({
     }
   };
 
+
+
+
   // Позиции dropdown
   const positionClasses = {
     'bottom-right': 'origin-top-right right-0 mt-2',
@@ -78,24 +81,24 @@ const LanguageSwitcher = ({
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
-        <img 
-          src={currentLanguage.icon} 
+        <img
+          src={currentLanguage.icon}
           alt={currentLanguage.code}
           className="w-5 h-5 object-contain rounded"
           onError={(e) => {
             e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSIjMzM3QUJDIi8+CjxjaXJjbGUgY3g9IjEwIiBjeT0iMTAiIHI9IjgiIGZpbGw9IiNmZmYiLz4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iNSIgZmlsbD0iI0U1MkYyRiIvPgo8L3N2Zz4K';
           }}
         />
-        
+
         {showText && (
           <span className="font-medium text-sm">
             {currentLanguage.code.toUpperCase()}
           </span>
         )}
-        
-        <svg 
+
+        <svg
           className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
-          fill="currentColor" 
+          fill="currentColor"
           viewBox="0 0 20 20"
         >
           <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -126,8 +129,8 @@ const LanguageSwitcher = ({
                   }
                 `}
               >
-                <img 
-                  src={language.icon} 
+                <img
+                  src={language.icon}
                   alt={language.code}
                   className="w-5 h-5 mr-3 object-contain rounded"
                   onError={(e) => {

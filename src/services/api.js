@@ -1034,7 +1034,16 @@ class ApiService {
       throw error;
     }
   }
-  // Внутри класса ApiService
+
+  async getArchiveYears() {
+    try {
+      return await this.request('/journal/archive/years/');
+    } catch (error) {
+      console.error("Error fetching archive years:", error);
+      throw error;
+    }
+  }
+
   async getAdministrativeStructurePdf(language = "ru") {
     const langParam = this.getLanguageParam(language);
     try {
@@ -1046,6 +1055,7 @@ class ApiService {
       return null;
     }
   }
+
   async getVestnikData(tab, language = "ru") {
     const langParam = this.getLanguageParam(language);
     try {
@@ -1060,7 +1070,7 @@ class ApiService {
           if (typeof firstResult === 'object' && firstResult.section) {
             // Find the specific section
             const section = data.results.find(item => item.section === tab);
-            return section ? section.content : null;
+            return section || null;
           }
           // For editorial-office, archive - return the array
           return data.results;
@@ -1075,7 +1085,6 @@ class ApiService {
       throw error;
     }
   }
-
 }
 
 

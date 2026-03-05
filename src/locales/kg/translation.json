@@ -74,7 +74,7 @@
     "exchange_programs": "Алмашуу программалары",
     "instructions": "Нускамалар",
     "scholarship": "Стипендия",
-    "my_edu": "MyEdu",
+    "my_edu": "Ebilim",
     "portal_login": "MyEdu'га кирүү",
     "useful_links": "Пайдалуу шилтемелер",
     "ebilim_login": "eBilim системасына кирүү",
@@ -168,9 +168,12 @@
     "archieve": "Архив",
     "requirements": "Талаптар",
     "reqs": "Талаптар",
+    "year": "Жылдар",
+    "year_short": "ж.",
     "indexing": "Индексациялоо",
     "ethics": "Этика",
     "contacts": "Байланыштар",
+    "download": "PDF жүктөп алуу",
     "errorTitle": "Маалыматты жүктөө катасы",
     "retry": "Кайра аракет кыл",
     "title": "ВЕСТНИК КМДТжСА",
@@ -196,6 +199,7 @@
       "selectIssue": "Чыгарылыш тандаңыз",
       "selected": "Тандалган",
       "year": "жыл",
+      "year_short": "ж.",
       "pages": "Барактар",
       "citations": "Цитаталар",
       "selectIssueTitle": "Чыгарылыш тандаңыз",
@@ -205,10 +209,12 @@
       "noPdfDescription": "PDF файлын көрүү үчүн чыгарылыш тандаңыз",
       "fileSize": "Файлдын өлчөмү",
       "noDataTitle": "Маалыматтар табылган жок",
-      "noDataDescription": "Вестник маалыматтарын жүктөө ийгиликсиз болду"
+      "noDataDescription": "Вестник маалыматтарын жүктөө ийгиликсиз болду",
+      "download_pdf": "PDF версиясын жүктөп алуу"
     },
     "archive": {
       "title": "Чыгарылыштар архиви",
+      "archive_for": "",
       "allYears": "Бардык жылдар",
       "vestnik": "Вестник",
       "noIssues": {

@@ -65,7 +65,7 @@
     "exchange_programs": "Exchange Programs",
     "instructions": "Instructions",
     "scholarship": "Scholarship",
-    "my_edu": "MyEdu",
+    "my_edu": "Ebilim",
     "portal_login": "Enter to MyEdu",
     "useful_links": "Useful Links",
     "ebilim_login": "eBilim Login",
@@ -141,10 +141,13 @@
     "requirements": "Requirements",
     "reqs": "Requirements",
     "indexing": "Indexing",
+    "download": "Download PDF version",
     "ethics": "Ethics",
     "contacts": "Contacts",
     "errorTitle": "Error loading data",
     "retry": "Retry",
+    "year": "Years",
+    "year_short": "yr.",
     "title": "VESTNIK KSAPCS",
     "subtitle": "Advanced research in physical culture and sports",
     "views": {
@@ -168,6 +171,7 @@
       "selectIssue": "Select Issue",
       "selected": "Selected",
       "year": "year",
+      "year_short": "yr.",
       "pages": "Pages",
       "citations": "Citations",
       "selectIssueTitle": "Select Issue",
@@ -177,10 +181,12 @@
       "noPdfDescription": "Select an issue to view the PDF file",
       "fileSize": "File Size",
       "noDataTitle": "Data Not Found",
-      "noDataDescription": "Failed to load bulletin data"
+      "noDataDescription": "Failed to load bulletin data",
+      "download_pdf": "Download PDF version"
     },
     "archive": {
       "title": "Issues archive",
+      "archive_for": "",
       "allYears": "All years",
       "vestnik": "Bulletin",
       "noIssues": {

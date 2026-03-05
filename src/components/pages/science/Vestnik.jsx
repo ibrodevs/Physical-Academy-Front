@@ -3,23 +3,17 @@ import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import apiService from "../../../services/api";
 
-const SkeletonLoader = () => (
-  <div className="animate-pulse space-y-6">
-    <div className="h-10 bg-white/5 w-1/3 rounded-xl"></div>
-    <div className="space-y-3">
-      <div className="h-4 bg-white/5 w-full rounded"></div>
-      <div className="h-4 bg-white/5 w-full rounded"></div>
-      <div className="h-4 bg-white/5 w-2/3 rounded"></div>
-    </div>
-  </div>
-);
-
 const Vestnik = () => {
   const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState("about");
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Состояния для динамических списков (Архив и Редакция)
+  const [selectedPerson, setSelectedPerson] = useState(null);
+  const [archiveYears, setArchiveYears] = useState([]);
+  const [selectedYear, setSelectedYear] = useState(null);
 
   const menuItems = [
     { id: "about", label: t("vestnik.about", "Сведения о журнале") },
@@ -39,144 +33,182 @@ const Vestnik = () => {
     setLoading(true);
     setError(null);
     try {
-      const result = await apiService.getVestnikData(activeTab, i18n.language);
-      setData(result);
+      // Запрос отправляет текущий язык (i18n.language), поэтому API вернет нужный PDF
+      const response = await apiService.getVestnikData(activeTab, i18n.language);
+      const results = response.results || response;
+
+      if (activeTab === "archive" && Array.isArray(results)) {
+        const years = results.map(item => item.year);
+        setArchiveYears(years);
+        if (years.length > 0 && !selectedYear) setSelectedYear(years[0]);
+        setData(results);
+      }
+      else if (activeTab.includes("editorial") && Array.isArray(results)) {
+        if (results.length > 0) setSelectedPerson(results[0]);
+        setData(results);
+      }
+      else {
+        const sectionData = Array.isArray(results)
+          ? results.find(item => item.section === activeTab)
+          : results;
+        setData(sectionData);
+      }
     } catch (err) {
-      console.error("Ошибка загрузки вкладки:", activeTab, err);
+      console.error("Ошибка загрузки:", err);
       setError("Не удалось загрузить данные");
     } finally {
       setLoading(false);
     }
-  }, [activeTab, i18n.language]);
+  }, [activeTab, i18n.language, selectedYear]);
 
   useEffect(() => {
     loadData();
   }, [loadData]);
 
-  const renderConten = () => {
-    if (data.activeTab === "latest-issue") {
-      console.log("Данные для редакции:", data);
-    }
-  }
+  const handleMenuClick = (id) => {
+    setActiveTab(id);
+    if (id !== "archive") setSelectedYear(null);
+    if (!id.includes("editorial")) setSelectedPerson(null);
+  };
 
-  console.log("Текущая вкладка:", activeTab);
-
-  const renderContent = () => {
-    if (loading) return <SkeletonLoader />;
+  const renderMainContent = () => {
+    if (loading) return <div className="text-emerald-500 animate-pulse font-bold">Загрузка...</div>;
     if (error) return <div className="text-red-400 py-10 text-center">{error}</div>;
     if (!data) return null;
 
-    if (activeTab === "editorial-office" && Array.isArray(data)) {
+    // 1. РЕНДЕР РЕДАКЦИИ
+    if (selectedPerson && activeTab.includes("editorial")) {
       return (
-        <div className="flex flex-col gap-4 ">
-          {data.map((person, i) => (
-            <div key={i} className="bg-white/5 p-6 rounded-3xl border border-white/10 flex items-center gap-5">
-              <img
-                src={person.photo || "/placeholder-user.png"}
-                className="w-20 h-20 rounded-full object-cover border-2 border-emerald-500"
-                alt={person.full_name}
-              />
-              <div>
-                <h4 className="text-white font-bold">{person.full_name}</h4>
-                <p className="text-emerald-400 text-sm">{person.position}</p>
+        <motion.div key={selectedPerson.id} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+          <div className="flex flex-col md:flex-row gap-8 items-start">
+            <img src={selectedPerson.image || "/placeholder-user.png"} className="w-40 h-52 rounded-2xl object-cover border-2 border-emerald-500 shadow-xl" alt={selectedPerson.name} />
+            <div>
+              <h3 className="text-3xl font-bold text-white mb-2">{selectedPerson.name}</h3>
+              <p className="text-emerald-400 text-xl font-medium">{selectedPerson.position}</p>
+            </div>
+          </div>
+          <div
+            className="prose prose-invert max-w-none pt-6 border-t border-white/10 [&_span]:!text-inherit [&_p]:!text-inherit [&_div]:!text-inherit"
+            dangerouslySetInnerHTML={{ __html: selectedPerson.description || "" }}
+          />
+        </motion.div>
+      );
+    }
+
+    // 2. РЕНДЕР АРХИВА
+    if (activeTab === "archive" && Array.isArray(data)) {
+      const currentYearData = data.find(item => item.year === selectedYear);
+      const issues = currentYearData ? currentYearData.items : [];
+      return (
+        <motion.div key={selectedYear} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+          <div className="grid gap-4">
+            {issues.map((issue) => (
+              <div key={issue.id} className="p-6 bg-white/5 rounded-3xl border border-white/5 flex justify-between items-center hover:bg-white/10 transition-all group">
+                <div>
+                  <h4 className="text-white font-bold text-lg group-hover:text-emerald-400 transition-colors">{issue.title}</h4>
+                  <p className="text-slate-500 text-sm mt-1">{selectedYear} {t("vestnik.year_short", "г.")}</p>
+                </div>
+                {issue.pdf && (
+                  <a href={issue.pdf} target="_blank" rel="noreferrer" className="bg-emerald-500 text-slate-900 px-6 py-2 rounded-xl font-bold hover:bg-emerald-400 transition-transform hover:scale-105">PDF</a>
+                )}
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </motion.div>
       );
     }
 
-    if (activeTab === "editorial-board" && Array.isArray(data)) {
-      return (
-        <div className="flex flex-col gap-3 h-64 overflow-y-auto">
-          {data.map((item, i) => (
-            <div
-              key={i}
-              className="p-4 bg-white/5 rounded-2xl border border-white/5 text-white text-lg font-medium  hover:bg-white/10 transition-all"
-            >
-              {typeof item === 'string' ? item : item.full_name}
-            </div>
-          ))}
-        </div>
-      );
-    }
-
-    if (activeTab === "archive" || activeTab === "latest-issue") {
-      const items = Array.isArray(data) ? data : [data];
-      return (
-        <div className="space-y-4">
-          {items.map((item, i) => (
-            <div key={i} className="flex justify-between items-center p-6 bg-slate-800/50 rounded-2xl border border-white/5">
-              <div>
-                <span className="text-emerald-400 text-xs font-bold uppercase">{item.year}</span>
-                <h3 className="text-white font-bold text-lg">{item.title}</h3>
-              </div>
-              {item.pdf_file && (
-                <a href={item.pdf_file} target="_blank" rel="noreferrer" className="bg-emerald-500 text-slate-900 px-5 py-2 rounded-xl font-bold hover:bg-emerald-400 transition-colors">
-                  PDF
-                </a>
-              )}
-            </div>
-          ))}
-        </div>
-      );
-    }
-
-
-
-
+    // 3. ОБЫЧНЫЙ ТЕКСТ + PDF (about, requirements, indexing...)
     const htmlContent = data.content || (typeof data === 'string' ? data : "");
+    const pdfLink = data[`pdf_${i18n.language}`] || data.pdf;
+    const isRequirements = activeTab === "requirements";
+
+    const pdfButton = pdfLink && pdfLink.trim() ? (
+      <div className={`${isRequirements ? "mb-8 text-center" : "pt-8 border-t border-white/10 text-center"}`}>
+        <a
+          key={`${activeTab}-${i18n.language}`} // Ключ для смены PDF ссылки при смене языка
+          href={pdfLink}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-3 bg-emerald-500 text-slate-900 px-8 py-4 rounded-2xl font-black hover:bg-emerald-400 transition-all hover:scale-105 shadow-xl shadow-emerald-500/20"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+          </svg>
+          {t("vestnik.download", "Скачать PDF версию")}
+        </a>
+      </div>
+    ) : null;
+
     return (
-      <div
-        className="prose prose-invert max-w-none prose-emerald text-white 
-               [&_*]:text-white/90 [&_*]:!bg-transparent [&_span]:!bg-transparent
-               [&_*]:!text-white
-               break-words overflow-x-auto
-               [&_table]:display-block [&_table]:overflow-x-auto [&_table]:max-w-full"
-        dangerouslySetInnerHTML={{ __html: htmlContent }}
-      />
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} key={activeTab} className="flex flex-col h-full">
+        {/* В Требованиях PDF кнопка сверху */}
+        {isRequirements && pdfButton}
+
+        <div
+          className="prose prose-invert max-w-none prose-emerald mb-10 overflow-x-hidden
+                     [&_span]:!text-inherit [&_p]:!text-inherit [&_div]:!text-inherit [&_b]:!text-inherit [&_strong]:!text-inherit"
+          dangerouslySetInnerHTML={{ __html: htmlContent }}
+        />
+
+        {/* В остальных разделах PDF кнопка снизу */}
+        {!isRequirements && pdfButton}
+      </motion.div>
     );
   };
-
 
   return (
     <div className="min-h-screen bg-[#0f172a] text-slate-300 py-20 px-4">
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-
           <nav className="lg:col-span-4 space-y-2">
-            {/* ИСПРАВЛЕНИЕ: Заголовок теперь использует t() для перевода */}
-            <h2 className="text-2xl font-black text-white mb-8 uppercase tracking-tighter">
-              {t("vestnik.title", "Вестник")}
-            </h2>
+            <h2 className="text-2xl font-black text-white mb-8 uppercase tracking-tighter">{t("vestnik.title", "Вестник")}</h2>
+            {menuItems.map((item) => {
+              const isActive = activeTab === item.id;
+              return (
+                <div key={item.id} className="flex flex-col">
+                  <button
+                    onClick={() => handleMenuClick(item.id)}
+                    className={`w-full text-left px-6 py-4 rounded-2xl font-bold transition-all ${isActive ? "bg-emerald-500 text-slate-900 shadow-lg shadow-emerald-500/20" : "hover:bg-white/5 text-slate-400"}`}
+                  >
+                    {item.label}
+                  </button>
 
-            {menuItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setActiveTab(item.id)}
-                className={`w-full text-left px-6 py-4 rounded-2xl font-bold transition-all ${activeTab === item.id
-                  ? "bg-emerald-500 text-slate-900 shadow-lg shadow-emerald-500/20"
-                  : "hover:bg-white/5 text-slate-400"
-                  }`}
-              >
-                {item.label}
-              </button>
-            ))}
+                  {/* Подменю Редакции */}
+                  <AnimatePresence>
+                    {isActive && item.id.includes("editorial") && Array.isArray(data) && (
+                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden flex flex-col ml-6 mt-2 border-l-2 border-emerald-500/20">
+                        {data.map((person) => (
+                          <button key={person.id} onClick={() => setSelectedPerson(person)} className={`text-left px-4 py-2 text-sm transition-colors ${selectedPerson?.id === person.id ? "text-emerald-400 font-bold" : "text-slate-500 hover:text-white"}`}>
+                            • {person.name}
+                          </button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {/* Подменю Архива */}
+                  <AnimatePresence>
+                    {isActive && item.id === "archive" && archiveYears.length > 0 && (
+                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden flex flex-col ml-6 mt-2 border-l-2 border-emerald-500/20">
+                        {archiveYears.map((year) => (
+                          <button key={year} onClick={() => setSelectedYear(year)} className={`text-left px-4 py-2 text-sm transition-colors ${selectedYear === year ? "text-emerald-400 font-bold" : "text-slate-500 hover:text-white"}`}>
+                            • {year} {t("vestnik.year_short", "г.")}
+                          </button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
           </nav>
 
-          <main className="lg:col-span-8 bg-slate-900/50 rounded-[2.5rem] p-8 md:p-12 border border-white/5 min-h-[500px]">
+          <main className="lg:col-span-8 bg-slate-900/50 rounded-[2.5rem] p-8 md:p-12 border border-white/5 min-h-[600px] backdrop-blur-sm">
             <AnimatePresence mode="wait">
-              <motion.div
-                key={activeTab + loading}
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-              >
-                {renderContent()}
-              </motion.div>
+              {renderMainContent()}
             </AnimatePresence>
           </main>
-
         </div>
       </div>
     </div>

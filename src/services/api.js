@@ -1059,6 +1059,10 @@ class ApiService {
   async getVestnikData(tab, language = "ru") {
     const langParam = this.getLanguageParam(language);
     try {
+      if (tab === "editorial-board") {
+        return await this.getEditorialBoardFiles(language);
+      }
+
       const data = await this.request(`/journal/${tab}/?lang=${langParam}`);
 
       // Handle different response formats
@@ -1084,6 +1088,15 @@ class ApiService {
       console.error(`Error fetching vestnik tab ${tab}:`, error);
       throw error;
     }
+  }
+
+  async getEditorialBoardFiles(language = "ru") {
+    const langParam = this.getLanguageParam(language);
+    const data = await this.request(`/journal/editorial-board/?lang=${langParam}`);
+    if (Array.isArray(data?.results)) return data.results;
+    if (Array.isArray(data)) return data;
+    if (data && typeof data === "object" && (data.title || data.pdf)) return [data];
+    return [];
   }
 }
 

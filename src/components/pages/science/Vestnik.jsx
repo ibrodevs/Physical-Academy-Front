@@ -43,9 +43,17 @@ const Vestnik = () => {
         if (years.length > 0 && !selectedYear) setSelectedYear(years[0]);
         setData(results);
       }
-      else if (activeTab.includes("editorial") && Array.isArray(results)) {
+      else if (activeTab === "editorial-office" && Array.isArray(results)) {
         if (results.length > 0) setSelectedPerson(results[0]);
         setData(results);
+      }
+      else if (activeTab === "editorial-board") {
+        const boardItems = Array.isArray(results) ? results : (results ? [results] : []);
+        setData(boardItems);
+      }
+      else if (activeTab === "latest-issue") {
+        const latestIssueItems = Array.isArray(results) ? results : (results ? [results] : []);
+        setData(latestIssueItems);
       }
       else {
         const sectionData = Array.isArray(results)
@@ -68,7 +76,7 @@ const Vestnik = () => {
   const handleMenuClick = (id) => {
     setActiveTab(id);
     if (id !== "archive") setSelectedYear(null);
-    if (!id.includes("editorial")) setSelectedPerson(null);
+    if (id !== "editorial-office") setSelectedPerson(null);
   };
 
   const renderMainContent = () => {
@@ -77,7 +85,7 @@ const Vestnik = () => {
     if (!data) return null;
 
     // 1. РЕНДЕР РЕДАКЦИИ
-    if (selectedPerson && activeTab.includes("editorial")) {
+    if (selectedPerson && activeTab === "editorial-office") {
       return (
         <motion.div key={selectedPerson.id} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
           <div className="flex flex-col md:flex-row gap-8 items-start">
@@ -91,6 +99,37 @@ const Vestnik = () => {
             className="prose prose-invert max-w-none pt-6 border-t border-white/10 [&_span]:!text-inherit [&_p]:!text-inherit [&_div]:!text-inherit"
             dangerouslySetInnerHTML={{ __html: selectedPerson.description || "" }}
           />
+        </motion.div>
+      );
+    }
+
+    // 1.1 РЕНДЕР РЕДКОЛЛЕГИИ (СПИСОК PDF)
+    if (activeTab === "editorial-board") {
+      const boardItems = Array.isArray(data) ? data : [];
+      return (
+        <motion.div key={`editorial-board-${i18n.language}`} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
+          {boardItems.length === 0 && (
+            <div className="text-slate-400">{t("vestnik.noData", "Нет данных")}</div>
+          )}
+          {boardItems.map((item, index) => (
+            <div key={item.id || item.pdf || `${item.title}-${index}`} className="p-6 bg-white/5 rounded-3xl border border-white/5 flex flex-col md:flex-row md:items-center md:justify-between gap-4 hover:bg-white/10 transition-all group">
+              <div>
+                <h4 className="text-white font-bold text-lg group-hover:text-emerald-400 transition-colors">
+                  {item.title || t("vestnik.download", "Скачать PDF версию")}
+                </h4>
+                {item.updated_at && (
+                  <p className="text-slate-500 text-sm mt-1">
+                    {new Date(item.updated_at).toLocaleDateString(i18n.language)}
+                  </p>
+                )}
+              </div>
+              {item.pdf && (
+                <a href={item.pdf} target="_blank" rel="noreferrer" className="bg-emerald-500 text-slate-900 px-6 py-2 rounded-xl font-bold hover:bg-emerald-400 transition-transform hover:scale-105 text-center">
+                  PDF
+                </a>
+              )}
+            </div>
+          ))}
         </motion.div>
       );
     }
@@ -114,6 +153,34 @@ const Vestnik = () => {
               </div>
             ))}
           </div>
+        </motion.div>
+      );
+    }
+
+    // 2.1 РЕНДЕР ПОСЛЕДНЕГО НОМЕРА (СПИСОК PDF)
+    if (activeTab === "latest-issue" && Array.isArray(data)) {
+      return (
+        <motion.div key={`latest-issue-${i18n.language}`} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
+          {data.length === 0 && (
+            <div className="text-slate-400">{t("vestnik.noData", "Нет данных")}</div>
+          )}
+          {data.map((issue, index) => (
+            <div key={issue.id || issue.pdf_file || `${issue.title}-${index}`} className="p-6 bg-white/5 rounded-3xl border border-white/5 flex flex-col md:flex-row md:items-center md:justify-between gap-4 hover:bg-white/10 transition-all group">
+              <div>
+                <h4 className="text-white font-bold text-lg group-hover:text-emerald-400 transition-colors">
+                  {issue.title || t("vestnik.latest", "Последний номер")}
+                </h4>
+                {issue.year && (
+                  <p className="text-slate-500 text-sm mt-1">{issue.year} {t("vestnik.year_short", "г.")}</p>
+                )}
+              </div>
+              {issue.pdf_file && (
+                <a href={issue.pdf_file} target="_blank" rel="noreferrer" className="bg-emerald-500 text-slate-900 px-6 py-2 rounded-xl font-bold hover:bg-emerald-400 transition-transform hover:scale-105 text-center">
+                  PDF
+                </a>
+              )}
+            </div>
+          ))}
         </motion.div>
       );
     }
@@ -176,7 +243,7 @@ const Vestnik = () => {
 
                   {/* Подменю Редакции */}
                   <AnimatePresence>
-                    {isActive && item.id.includes("editorial") && Array.isArray(data) && (
+                    {isActive && item.id === "editorial-office" && Array.isArray(data) && (
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden flex flex-col ml-6 mt-2 border-l-2 border-emerald-500/20">
                         {data.map((person) => (
                           <button key={person.id} onClick={() => setSelectedPerson(person)} className={`text-left px-4 py-2 text-sm transition-colors ${selectedPerson?.id === person.id ? "text-emerald-400 font-bold" : "text-slate-500 hover:text-white"}`}>

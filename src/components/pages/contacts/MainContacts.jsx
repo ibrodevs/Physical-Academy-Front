@@ -55,10 +55,21 @@ const MainContacts = () => {
             title: currentLang === 'ru' ? 'Приемная комиссия' :
                currentLang === 'kg' ? 'Кабыл алуу комиссиясы' :
                   'Admission Committee',
-            value: '+996 707 09 09 52',
-            description: currentLang === 'ru' ? 'Халиалдаева Айнура Саматовна' :
-               currentLang === 'kg' ? 'Халиалдаева Айнура Саматовна' :
-                  'Khalialdaeva Ainura Samatovna'
+            value: '+996 (312) 57 04 89',
+            description: currentLang === 'ru' ? 'Приемная комиссия' :
+               currentLang === 'kg' ? 'Кабыл алуу комиссиясы' :
+                  'Admission Committee'
+         },
+         {
+            id: 3,
+            type: 'email',
+            title: currentLang === 'ru' ? 'Приемная комиссия' :
+               currentLang === 'kg' ? 'Кабыл алуу комиссиясы' :
+                  'Admission Committee',
+            value: 'Sport_akadem@mail.ru',
+            description: currentLang === 'ru' ? 'Электронная почта приемной комиссии' :
+               currentLang === 'kg' ? 'Кабыл алуу комиссиясынын электрондук почтасы' :
+                  'Admission Committee Email'
          },
       ],
       schedule: {

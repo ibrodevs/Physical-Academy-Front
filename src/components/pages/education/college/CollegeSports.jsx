@@ -594,24 +594,7 @@ const DepartmentTabs = () => {
                   </div>
                   <h3 className="text-xl font-bold text-blue-900 mb-2 text-center">{teacher.name}</h3>
                   <p className="text-gray-600 mb-3 text-center font-medium">{teacher.subject}</p>
-                  <div className="space-y-2 mb-4">
-                    {teacher.phone && (
-                      <div className="flex items-center gap-2 text-sm text-gray-700">
-                        <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                        </svg>
-                        <span>{teacher.phone}</span>
-                      </div>
-                    )}
-                    {teacher.email && (
-                      <div className="flex items-center gap-2 text-sm text-gray-700">
-                        <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                        <span>{teacher.email}</span>
-                      </div>
-                    )}
-                  </div>
+                  <div className="space-y-2 mb-4"></div>
                   {teacher.resume && (
                     <a
                       href={teacher.resume}
@@ -786,24 +769,7 @@ const DepartmentTabs = () => {
                     <p className="text-gray-600 mb-3 text-center font-medium">
                       {teacher.role || teacher.position || teacher.job_title}
                     </p>
-                    <div className="space-y-2">
-                      {(teacher.phone || teacher.phone_number) && (
-                        <div className="flex items-center gap-2 text-sm text-gray-700">
-                          <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                          </svg>
-                          <span>{teacher.phone || teacher.phone_number}</span>
-                        </div>
-                      )}
-                      {(teacher.email || teacher.email_address) && (
-                        <div className="flex items-center gap-2 text-sm text-gray-700">
-                          <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                          </svg>
-                          <span>{teacher.email || teacher.email_address}</span>
-                        </div>
-                      )}
-                    </div>
+                    <div className="space-y-2"></div>
                   </div>
                 ))}
               </div>

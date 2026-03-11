@@ -87,10 +87,10 @@ const BachelorInfo = () => {
   const contactsSchedule = {
     phone: t('bachelor.contacts.phone', '+996 312 57 04 89'),
     admissionCommission: {
-      phone: t('bachelor.contacts.commissionPhone', '+996 707 09 09 52'),
-      name: t('bachelor.contacts.commissionName', 'Халиалдаева Айнура Саматовна')
+      phone: t('bachelor.contacts.commissionPhone', '+996 (312) 57 04 89'),
+      name: t('bachelor.contacts.commissionName', 'Приемная комиссия')
     },
-    email: t('bachelor.contacts.emailAddress', 'admission@kgafkis.kg'),
+    email: t('bachelor.contacts.emailAddress', 'Sport_akadem@mail.ru'),
     address: t('bachelor.contacts.address', 'И.Ахунбаева 97 Главный корпус'),
     workingHours: {
       weekdays: t('bachelor.contacts.workingHoursWeekdays', 'Понедельник-пятница: 8:00 - 17:00, обед 12:00 - 13:00'),

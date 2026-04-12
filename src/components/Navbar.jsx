@@ -178,7 +178,7 @@ const Navbar = ({ currentLanguage, languages = [], changeLanguage }) => {
     },
     myEdu: {
       title: t('nav.my_edu', 'Моё образование'),
-      link: 'https://myedu.kgafkis.kg/',
+      link: 'http://ebilim.ksapcs.kg/Account/Login?ReturnUrl=%2F',
       isExternal: true
     },
     contacts: {
